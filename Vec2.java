@@ -14,6 +14,10 @@ public class Vec2{
         return new Vec2(this.x*multiplier, this.y*multiplier);
     }
 
+    public Vec2 div(double divisor){
+        return new Vec2(this.x/divisor, this.y/divisor);
+    }
+
     public double mag(){
         return Math.sqrt(this.x*this.x + this.y*this.y);
     }

@@ -1,7 +1,7 @@
 import java.awt.*;
 
 public class Circle{
-    double x, y, radius;
+    double x, y, radius, density;
     Vec2 pos, vel, accel;
     Color color;
 
@@ -10,6 +10,7 @@ public class Circle{
         vel = new Vec2(0,0);
         accel = new Vec2(0,0);
         radius = 20;
+        density = 1;
         this.color = c;
     }
 
@@ -17,8 +18,17 @@ public class Circle{
         pos = new Vec2(x, y);
         vel = new Vec2(0,0);
         accel = new Vec2(0,.9);
+        density = 1;
         this.radius = radius;
         this.color = c;
+    }
+
+    public void SetDensity(double den){
+        this.density = den;
+    }
+
+    public double GetMass(){
+        return this.density*this.radius*.2;
     }
 
     public Vec2 GetPosition(){

@@ -51,7 +51,6 @@ public class Reflection extends BufferedApplet{
 
                 balls[i].SetVelocity(balls[i].GetVelocity().sub(v));
             }
-
         }
     }
 }
