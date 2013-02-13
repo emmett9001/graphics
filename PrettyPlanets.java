@@ -2,13 +2,22 @@ import java.awt.*;
 import java.util.Random;
 import java.lang.Math;
 
-public class Planets extends BufferedApplet{
+public class PrettyPlanets extends BufferedApplet{
     boolean started = false;
-    final int numPlanets = 500;
+    final int numPlanets = 200;
+    final int numStars = 800;
+    final int numSunDisks = 5;
     Random gen = new Random();
 
-    Circle planet2 = new Circle(600, 350, 55, Color.BLUE);
+    Color sunColor = new Color(255, 255, 0);
+    Circle planet2 = new Circle(600, 350, 55, sunColor);
     Circle[] planets = new Circle[numPlanets];
+    Circle[] stars = new Circle[numStars];
+    Color bgColor = new Color(0, 0, 20);
+    int lum = 195 + Math.abs(gen.nextInt()) % 60;
+    Color starColor = new Color(lum, lum, lum);
+
+    Polygon[] sunGlare = new Polygon[numSunDisks];
 
     long startTime = System.currentTimeMillis();
 
@@ -27,12 +36,35 @@ public class Planets extends BufferedApplet{
                 planets[i].SetDensity(2 + gen.nextInt() % 3);
                 planets[i].SetVelocity(new Vec2(1 + gen.nextInt() % 2, 3));
             }
+
+            for(int i = 0; i < numStars; i++){
+                stars[i] = new Circle(Math.abs(gen.nextInt()) % bounds().width,
+                                      Math.abs(gen.nextInt()) % bounds().height,
+                                      1 + Math.abs(gen.nextInt()) % 3, starColor);
+            }
+
+            for(int i = 0; i < numSunDisks; i++){
+                Color glareRingColor = new Color((40 * i) + 80, (40 * i) + 80, 0);
+                sunGlare[i] = new Polygon(glareRingColor, new Vec2(655, 405), 30 * (5 - i));
+            }
         }
 
         double ttime = (System.currentTimeMillis() - startTime) / 1000.0;
 
-        g.setColor(Color.WHITE);
+        g.setColor(bgColor);
         g.fillRect(0, 0, bounds().width, bounds().height);
+
+        for(int i = 0; i < numStars; i++){
+            stars[i].draw(g);
+        }
+
+        for(int i = 0; i < numSunDisks; i++){
+            sunGlare[i].build(
+                (int)((10 + (gen.nextInt() % 5))*(2+i)),
+                Math.sin(ttime),
+                57 + 15*(numSunDisks-i));
+            sunGlare[i].draw(g);
+        }
 
         planet2.update();
         planet2.draw(g);
