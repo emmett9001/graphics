@@ -60,6 +60,10 @@ public class Circle{
         return cen;
     }
 
+    public void SetRadius(double r){
+        this.radius = r;
+    }
+
     public double GetRadius(){
         return this.radius;
     }
