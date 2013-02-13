@@ -55,7 +55,9 @@ public class PrettyPlanets extends BufferedApplet{
         g.fillRect(0, 0, bounds().width, bounds().height);
 
         for(int i = 0; i < numStars; i++){
-            stars[i].SetRadius(Math.abs(gen.nextInt() % 3));
+            if(gen.nextInt() % 10 == 1){
+                stars[i].SetRadius(1 + Math.abs(gen.nextInt() % 3));
+            }
             stars[i].draw(g);
         }
 
