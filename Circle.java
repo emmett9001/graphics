@@ -37,7 +37,9 @@ public class Circle{
             "I love you", "I love you","I love you","I love you","I love you",
             "Ich liebe dich", "Te dua", "Maite zaitut", "Wo ie ni",
             "Jeg elsker dig", "S'agapo", "Ya lyublyu tebya ", "Te quiero",
-            "Phom Rak Khun "
+            "Phom Rak Khun ", "Jag älskar dig","Naku penda","Te sakam",
+            "Kimi o ai shiteru","Je t'aime","Aloha wau ia 'oe","我爱你",
+            "मैं तुम्हैं बहुत चाहता हुँ","好きです","사랑해","میں آپ سے محبت کَرتا ہوں"
         };
         Random gen = new Random();
         this.text = ilus[Math.abs(gen.nextInt()) % ilus.length];

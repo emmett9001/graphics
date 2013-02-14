@@ -85,7 +85,7 @@ public class PrettyPlanets extends BufferedApplet{
             } else if(op > 255) {
                 op = 255;
             }
-            if(dispFrom1To2.mag() < planets[i].GetRadius() + planet2.GetRadius() + 40){
+            if(dispFrom1To2.mag() < planets[i].GetRadius() + planet2.GetRadius() + 80){
                 planets[i].SetTextOpacity(planets[i].GetTextOpacity() - 2);
             } else {
                 planets[i].SetTextOpacity(op);
