@@ -4,7 +4,7 @@ import java.lang.Math;
 
 public class PrettyPlanets extends BufferedApplet{
     boolean started = false;
-    final int numPlanets = 200;
+    final int numPlanets = 50;
     final int numStars = 800;
     final int numSunDisks = 5;
     Random gen = new Random();
@@ -34,7 +34,8 @@ public class PrettyPlanets extends BufferedApplet{
                 planets[i] = new Circle(200, 100,
                     8 + Math.abs(gen.nextInt() % 5), ballColor);
                 planets[i].SetDensity(2 + gen.nextInt() % 3);
-                planets[i].SetVelocity(new Vec2(1 + gen.nextInt() % 2, 3));
+                planets[i].SetVelocity(new Vec2(1 + gen.nextDouble() % 2, 3));
+                planets[i].SelectRandomString();
             }
 
             for(int i = 0; i < numStars; i++){
@@ -77,6 +78,18 @@ public class PrettyPlanets extends BufferedApplet{
             planets[i].draw(g);
 
             Vec2 dispFrom1To2 = planet2.GetCenter().sub(planets[i].GetCenter());
+
+            int op = 500 - (int)dispFrom1To2.mag();
+            if(op < 0){
+                op = 0;
+            } else if(op > 255) {
+                op = 255;
+            }
+            if(dispFrom1To2.mag() < planets[i].GetRadius() + planet2.GetRadius() + 40){
+                planets[i].SetTextOpacity(planets[i].GetTextOpacity() - 2);
+            } else {
+                planets[i].SetTextOpacity(op);
+            }
 
             Vec2 force = dispFrom1To2.normalize().mul(planet2.GetMass()).mul(planets[i].GetMass());
             force = force.div(dispFrom1To2.mag()*dispFrom1To2.mag());
