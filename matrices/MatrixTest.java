@@ -33,7 +33,7 @@ public class MatrixTest extends BufferedApplet{
 
         matrix.identity();
         matrix.translate(5*Math.sin(ttime), 0.0, -5.0);
-        matrix.rotateY(Math.sin(ttime));
+        matrix.rotateZ(Math.sin(ttime));
         matrix.scale(1+(Math.sin(ttime)), 1+Math.sin(ttime), 1.0);
 
         for (int e = 0 ; e < edges.length ; e++) {
@@ -51,7 +51,7 @@ public class MatrixTest extends BufferedApplet{
     }
 
     public void projectPoint(double[] xyz, int[] pxy) {
-        double FL = 20.0;
+        double FL = 10.0;
 
         double x = xyz[0];
         double y = xyz[1];

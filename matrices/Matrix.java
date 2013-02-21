@@ -25,7 +25,7 @@ public class Matrix implements IMatrix {
 
     public Matrix(){
         mat = new double[4][4];
-        identity();
+        //identity();
     }
 
     public Matrix(double[][] mat){
@@ -95,23 +95,27 @@ public class Matrix implements IMatrix {
     }
 
     public void leftMultiply(Matrix other){
+        Matrix res = new Matrix();
         for(int i = 0; i < 4; i++){
             for(int j = 0; j < 4; j++){
                 for(int k = 0; k < 4; k++){
-                    mat[j][i] += mat[i][k] * other.mat[k][j];
+                    res.mat[j][i] += this.get(i,k) * other.get(k,j);
                 }
             }
         }
+        mat = res.mat;
     }
 
     public void rightMultiply(Matrix other){
+        Matrix res = new Matrix();
         for(int i = 0; i < 4; i++){
             for(int j = 0; j < 4; j++){
                 for(int k = 0; k < 4; k++){
-                    mat[j][i] += mat[j][k] * other.mat[k][i];
+                    res.mat[j][i] += this.get(j,k) * other.get(k,i);
                 }
             }
         }
+        mat = res.mat;
     }
 
     public void transform(double[] src, double[] dst){
