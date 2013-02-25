@@ -1,5 +1,6 @@
 public class Matrix implements IMatrix {
     public double[][] mat;
+    private double[][] temp;
 
     // keeping things straight in my head...
     /* MY OTHER ONE (row major)
@@ -25,11 +26,12 @@ public class Matrix implements IMatrix {
 
     public Matrix(){
         mat = new double[4][4];
-        //identity();
+        temp = new double[4][4];
     }
 
     public Matrix(double[][] mat){
         this.mat = mat;
+        this.temp = new double[4][4];
     }
 
     public void identity(){
@@ -95,27 +97,39 @@ public class Matrix implements IMatrix {
     }
 
     public void leftMultiply(Matrix other){
-        Matrix res = new Matrix();
+        zeroTempMatrix();
         for(int i = 0; i < 4; i++){
             for(int j = 0; j < 4; j++){
                 for(int k = 0; k < 4; k++){
-                    res.mat[j][i] += this.get(i,k) * other.get(k,j);
+                    temp[j][i] += this.get(i,k) * other.get(k,j);
                 }
             }
         }
-        mat = res.mat;
+        for(int i = 0; i < 4; i++){
+            mat[i] = temp[i].clone();
+        }
     }
 
     public void rightMultiply(Matrix other){
-        Matrix res = new Matrix();
+        zeroTempMatrix();
         for(int i = 0; i < 4; i++){
             for(int j = 0; j < 4; j++){
                 for(int k = 0; k < 4; k++){
-                    res.mat[j][i] += this.get(j,k) * other.get(k,i);
+                    temp[j][i] += this.get(j,k) * other.get(k,i);
                 }
             }
         }
-        mat = res.mat;
+        for(int i = 0; i < 4; i++){
+            mat[i] = temp[i].clone();
+        }
+    }
+
+    private void zeroTempMatrix(){
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
+                temp[i][j] = 0.0;
+            }
+        }
     }
 
     public void transform(double[] src, double[] dst){
