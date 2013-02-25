@@ -7,9 +7,8 @@ public class MatrixTest extends BufferedApplet{
         { -1,-1,-1}, { 1,-1,-1}, {-1, -1,1}, {1, -1,1},
         { 0,1,0 },
     };
-    int[][] edges = {
-        {0,1},{2,3},{2,0},{3,1},
-        {0,4},{1,4},{2,4},{3,4},
+    int[][] faces = {
+        {0, 1, 3, 2}, {0, 1, 4}, {1, 3, 4}, {3, 2, 4}, {2, 0, 4}
     };
 
     Matrix matrix = new Matrix();
@@ -36,17 +35,24 @@ public class MatrixTest extends BufferedApplet{
         matrix.rotateZ(Math.sin(ttime));
         matrix.scale(1+(Math.sin(ttime)), 1+Math.sin(ttime), 1.0);
 
-        for (int e = 0 ; e < edges.length ; e++) {
-            int i = edges[e][0];
-            int j = edges[e][1];
+        for (int e = 0 ; e < faces.length ; e++) {
+            for(int f = 0; f < faces[e].length; f++){
+                int i = faces[e][f];
+                int j;
+                if(f == faces[e].length - 1){
+                    j = faces[e][0];
+                } else {
+                    j = faces[e][f+1];
+                }
 
-            matrix.transform(vertices[i], point0);
-            matrix.transform(vertices[j], point1);
+                matrix.transform(vertices[i], point0);
+                matrix.transform(vertices[j], point1);
 
-            projectPoint(point0, a);
-            projectPoint(point1, b);
+                projectPoint(point0, a);
+                projectPoint(point1, b);
 
-            g.drawLine(a[0], a[1], b[0], b[1]);
+                g.drawLine(a[0], a[1], b[0], b[1]);
+            }
         }
     }
 
