@@ -1,12 +1,15 @@
 import java.awt.*;
+import java.util.Random;
 
 public class GeometryTest extends BufferedApplet{
-    int w = 640;
-    int h = 480;
+    int w = 800;
+    int h = 800;
 
-    Geometry torus = new Geometry(20, 20);
+    Geometry torus = new Geometry(30, 10);
     Geometry sphere = new Geometry(20, 20);
-    Matrix balls = new Matrix();
+    Matrix ball = new Matrix();
+    Matrix ring = new Matrix();
+    Random rng = new Random();
 
     double[] point0 = new double[3];
     double[] point1 = new double[3];
@@ -21,7 +24,7 @@ public class GeometryTest extends BufferedApplet{
         if(!setupDone){
             setupDone = true;
             sphere.buildSphere();
-            torus.buildTorus();
+            torus.buildTorus(15, .5);
         }
         double ttime = (System.currentTimeMillis() - startTime) / 1000.0;
 
@@ -31,11 +34,21 @@ public class GeometryTest extends BufferedApplet{
 
         double[] anchor = {0.0, 0.0, 0.0};
 
-        balls.identity();
-        balls.rotateY(ttime);
-        balls.translate(0, 0, -4-Math.sin(5*ttime));
-        balls.scale(.5, .2*(2+Math.sin(ttime)), .5);
-        renderGeometry(torus, balls, g);
+        ball.identity();
+        ball.rotateY(7*ttime);
+        ball.rotateZ(5*ttime);
+        ball.translate(Math.sin(.01*ttime), 0, 0);
+        renderGeometry(sphere, ball, g);
+
+        for(int i = 1; i <= 4; i++){
+            ring.identity();
+            ring.scale(.1+(.03*i), .1+(.03*i), .1+(.03*i));
+            ring.rotateX((8 - i) * .01 * ttime);
+            ring.rotateY((8 - i) * .05 * ttime);
+            ring.rotateZ((8 - i) *.02 * ttime);
+            ring.parent(ball);
+            renderGeometry(torus, ring, g);
+        }
     }
 
     public void renderGeometry(Geometry geo, Matrix mat, Graphics g){

@@ -89,6 +89,10 @@ public class Geometry{
         buildParametricMesh(new Torus());
     }
 
+    public void buildTorus(double R, double r){
+        buildParametricMesh(new Torus(R,r));
+    }
+
     public void buildCylinder(){
         buildParametricMesh(new Cylinder());
     }
