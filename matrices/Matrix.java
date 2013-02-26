@@ -1,6 +1,7 @@
 public class Matrix implements IMatrix {
     public double[][] mat;
     private double[][] temp;
+    private Matrix inherit;
 
     // keeping things straight in my head...
     /* MY OTHER ONE (row major)
@@ -27,11 +28,13 @@ public class Matrix implements IMatrix {
     public Matrix(){
         mat = new double[4][4];
         temp = new double[4][4];
+        //inherit = new Matrix();
     }
 
     public Matrix(double[][] mat){
         this.mat = mat;
         this.temp = new double[4][4];
+        //inherit = new Matrix();
     }
 
     public void identity(){
@@ -58,6 +61,10 @@ public class Matrix implements IMatrix {
         mat[3][0] += x;
         mat[3][1] += y;
         mat[3][2] += z;
+    }
+
+    public void parent(Matrix par){
+        leftMultiply(par);
     }
 
     public void rotateX(double radians){

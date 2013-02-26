@@ -9,29 +9,55 @@ public class Geometry{
         this.N = N;
     }
 
-    static class Sphere{
-        static double x(double u, double v){
+    abstract class ParametricShape{
+        abstract double x(double u, double v);
+        abstract double y(double u, double v);
+        abstract double z(double u, double v);
+    }
+
+    class Sphere extends ParametricShape{
+        double x(double u, double v){
             return Math.cos(2*Math.PI*u) * Math.cos(Math.PI*(v-.5));
         }
-        static double y(double u, double v){
+        double y(double u, double v){
             return Math.sin(2*Math.PI*u) * Math.cos(Math.PI*(v-.5));
         }
-        static double z(double u, double v){
+        double z(double u, double v){
             return Math.sin(Math.PI*(v-.5));
         }
     }
 
-    static class Torus{
-        static double R = 3;
-        static double r = 1;
-        static double x(double u, double v){
+    class Torus extends ParametricShape{
+        double R, r;
+
+        public Torus(){
+            this.R = 3;
+            this.r = 1;
+        }
+        public Torus(double R, double r){
+            this.R = R;
+            this.r = r;
+        }
+        double x(double u, double v){
             return Math.cos(2*Math.PI*u) * (R + Math.cos(2*Math.PI*v));
         }
-        static double y(double u, double v){
+        double y(double u, double v){
             return Math.sin(2*Math.PI*u) * (R + Math.cos(2*Math.PI*v));
         }
-        static double z(double u, double v){
+        double z(double u, double v){
             return Math.sin(2*Math.PI*v);
+        }
+    }
+
+    class Cylinder extends ParametricShape{
+        double x(double u, double v){
+            return Math.cos(2*Math.PI*u);
+        }
+        double y(double u, double v){
+            return Math.sin(2*Math.PI*u);
+        }
+        double z(double u, double v){
+            return 2 * v - 1;
         }
     }
 
@@ -56,51 +82,15 @@ public class Geometry{
     }
 
     public void buildSphere(){
-        vertices = new double[(M+2)*(N+2)][3];
-        faces = new int[(M+2)*(N+2)][4];
-
-        double u = 0, v = 0;
-        for(int m = 0; m <= M; m++){
-            for(int n = 0; n <= N; n++){
-                vertices[index(M, m, n)][0] = Sphere.x(u,v);
-                vertices[index(M, m, n)][1] = Sphere.y(u,v);
-                vertices[index(M, m, n)][2] = Sphere.z(u,v);
-                v += 1.0/N;
-
-                if(m != M){
-                    faces[m+M*n][0] = index(M, m, n);
-                    faces[m+M*n][1] = index(M, m+1, n);
-                    faces[m+M*n][2] = index(M, m+1, n+1);
-                    faces[m+M*n][3] = index(M, m, n+1);
-                }
-            }
-            u += 1.0/M;
-            v = 0;
-        }
+        buildParametricMesh(new Sphere());
     }
 
     public void buildTorus(){
-        vertices = new double[(M+2)*(N+2)][3];
-        faces = new int[(M+2)*(N+2)][4];
+        buildParametricMesh(new Torus());
+    }
 
-        double u = 0, v = 0;
-        for(int m = 0; m <= M; m++){
-            for(int n = 0; n <= N; n++){
-                vertices[index(M, m, n)][0] = Torus.x(u,v);
-                vertices[index(M, m, n)][1] = Torus.y(u,v);
-                vertices[index(M, m, n)][2] = Torus.z(u,v);
-                v += 1.0/N;
-
-                if(m != M){
-                    faces[m+M*n][0] = index(M, m, n);
-                    faces[m+M*n][1] = index(M, m+1, n);
-                    faces[m+M*n][2] = index(M, m+1, n+1);
-                    faces[m+M*n][3] = index(M, m, n+1);
-                }
-            }
-            u += 1.0/M;
-            v = 0;
-        }
+    public void buildCylinder(){
+        buildParametricMesh(new Cylinder());
     }
 
     public void buildCube(){
@@ -121,8 +111,28 @@ public class Geometry{
         copyShape(v, f);
     }
 
-    public void buildCylinder(){
+    private void buildParametricMesh(ParametricShape shape){
+        vertices = new double[(M+2)*(N+2)][3];
+        faces = new int[(M+2)*(N+2)][4];
 
+        double u = 0, v = 0;
+        for(int m = 0; m <= M; m++){
+            for(int n = 0; n <= N; n++){
+                vertices[index(M, m, n)][0] = shape.x(u,v);
+                vertices[index(M, m, n)][1] = shape.y(u,v);
+                vertices[index(M, m, n)][2] = shape.z(u,v);
+                v += 1.0/N;
+
+                if(m != M && n != N){
+                    faces[m+M*n][0] = index(M, m, n);
+                    faces[m+M*n][1] = index(M, m+1, n);
+                    faces[m+M*n][2] = index(M, m+1, n+1);
+                    faces[m+M*n][3] = index(M, m, n+1);
+                }
+            }
+            u += 1.0/M;
+            v = 0;
+        }
     }
 
     private void copyShape(double[][] v, int[][] f){

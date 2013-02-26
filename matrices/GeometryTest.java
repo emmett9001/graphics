@@ -4,8 +4,9 @@ public class GeometryTest extends BufferedApplet{
     int w = 640;
     int h = 480;
 
-    Geometry geo = new Geometry(20, 20);
-    Matrix matrix = new Matrix();
+    Geometry cylinder = new Geometry(20, 20);
+    Geometry sphere = new Geometry(20, 20);
+    Matrix balls = new Matrix();
 
     double[] point0 = new double[3];
     double[] point1 = new double[3];
@@ -19,7 +20,7 @@ public class GeometryTest extends BufferedApplet{
     public void render(Graphics g){
         if(!setupDone){
             setupDone = true;
-            geo.buildTorus();
+            sphere.buildSphere();
         }
         double ttime = (System.currentTimeMillis() - startTime) / 1000.0;
 
@@ -29,9 +30,16 @@ public class GeometryTest extends BufferedApplet{
 
         double[] anchor = {0.0, 0.0, 0.0};
 
-        matrix.identity();
-        matrix.rotateY(Math.sin(ttime));
+        balls.identity();
+        balls.translate(-2, -2.0, -2);
+        balls.scale(.5, (2+Math.sin(ttime)), .5);
+        renderGeometry(sphere, balls, g);
 
+        balls.translate(3.6, 0.0, .5);
+        renderGeometry(sphere, balls, g);
+    }
+
+    public void renderGeometry(Geometry geo, Matrix mat, Graphics g){
         int i, j;
         for (int e = 0 ; e < geo.numFaces(); e++) {
             int[] face = geo.getFace(e);
@@ -43,8 +51,8 @@ public class GeometryTest extends BufferedApplet{
                     j = face[f+1];
                 }
 
-                matrix.transform(geo.getVertex(i), point0);
-                matrix.transform(geo.getVertex(j), point1);
+                mat.transform(geo.getVertex(i), point0);
+                mat.transform(geo.getVertex(j), point1);
 
                 projectPoint(point0, a);
                 projectPoint(point1, b);
@@ -55,7 +63,7 @@ public class GeometryTest extends BufferedApplet{
     }
 
     public void projectPoint(double[] xyz, int[] pxy) {
-        double FL = 10.0;
+        double FL = 7.0;
 
         double x = xyz[0];
         double y = xyz[1];
