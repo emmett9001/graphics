@@ -64,7 +64,7 @@ public class Matrix implements IMatrix {
     }
 
     public void parent(Matrix par){
-        leftMultiply(par);
+        translate(par.get(3,0), par.get(3,1), par.get(3,2));
     }
 
     public void rotateX(double radians){
@@ -74,7 +74,7 @@ public class Matrix implements IMatrix {
             {0.0, -Math.sin(radians),Math.cos(radians), 0.0},
             {0.0, 0.0,               0.0,               1.0},
         };
-        leftMultiply(new Matrix(mul));
+        rightMultiply(new Matrix(mul));
     }
 
     public void rotateZ(double radians){
@@ -84,7 +84,7 @@ public class Matrix implements IMatrix {
             {0.0, 0.0, 1.0, 0.0},
             {0.0, 0.0, 0.0, 1.0},
         };
-        leftMultiply(new Matrix(mul));
+        rightMultiply(new Matrix(mul));
     }
 
     public void rotateY(double radians){
@@ -94,7 +94,7 @@ public class Matrix implements IMatrix {
             {Math.sin(radians),0.0, Math.cos(radians), 0.0},
             {0.0, 0.0,               0.0,               1.0},
         };
-        leftMultiply(new Matrix(mul));
+        rightMultiply(new Matrix(mul));
     }
 
     public void scale(double x, double y, double z){
@@ -160,6 +160,17 @@ public class Matrix implements IMatrix {
             System.out.print("| ");
             for(int j = 0; j < 4; j++){
                 System.out.format("%.2f | ", mat[j][i]);
+            }
+            System.out.println();
+        }
+    }
+
+    public void pp(double [][]arr){
+        // prettyprint, for debugging
+        for(int i = 0; i < 4; i++){
+            System.out.print("| ");
+            for(int j = 0; j < 4; j++){
+                System.out.format("%.2f | ", arr[j][i]);
             }
             System.out.println();
         }

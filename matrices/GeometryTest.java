@@ -4,7 +4,7 @@ public class GeometryTest extends BufferedApplet{
     int w = 640;
     int h = 480;
 
-    Geometry cylinder = new Geometry(20, 20);
+    Geometry torus = new Geometry(20, 20);
     Geometry sphere = new Geometry(20, 20);
     Matrix balls = new Matrix();
 
@@ -21,6 +21,7 @@ public class GeometryTest extends BufferedApplet{
         if(!setupDone){
             setupDone = true;
             sphere.buildSphere();
+            torus.buildTorus();
         }
         double ttime = (System.currentTimeMillis() - startTime) / 1000.0;
 
@@ -31,12 +32,10 @@ public class GeometryTest extends BufferedApplet{
         double[] anchor = {0.0, 0.0, 0.0};
 
         balls.identity();
-        balls.translate(-2, -2.0, -2);
-        balls.scale(.5, (2+Math.sin(ttime)), .5);
-        renderGeometry(sphere, balls, g);
-
-        balls.translate(3.6, 0.0, .5);
-        renderGeometry(sphere, balls, g);
+        balls.rotateY(ttime);
+        balls.translate(0, 0, -4-Math.sin(5*ttime));
+        balls.scale(.5, .2*(2+Math.sin(ttime)), .5);
+        renderGeometry(torus, balls, g);
     }
 
     public void renderGeometry(Geometry geo, Matrix mat, Graphics g){
