@@ -3,13 +3,13 @@ import java.util.Random;
 
 public class GeometryTest extends BufferedApplet{
     int w = 800;
-    int h = 800;
+    int h = 700;
 
     Geometry torus = new Geometry(30, 10);
     Geometry sphere = new Geometry(20, 20);
     Matrix ball = new Matrix();
+    Matrix planet = new Matrix();
     Matrix ring = new Matrix();
-    Random rng = new Random();
 
     double[] point0 = new double[3];
     double[] point1 = new double[3];
@@ -32,13 +32,19 @@ public class GeometryTest extends BufferedApplet{
         g.fillRect(0, 0, w, h);
         g.setColor(Color.black);
 
-        double[] anchor = {0.0, 0.0, 0.0};
-
         ball.identity();
         ball.rotateY(7*ttime);
         ball.rotateZ(5*ttime);
-        ball.translate(Math.sin(.01*ttime), 0, 0);
+        ball.translate(2*Math.sin(.1*ttime), 0, 0);
         renderGeometry(sphere, ball, g);
+
+        planet.identity();
+        planet.scale(.1, .1, .1);
+        planet.parent(ball);
+        planet.translate(2*Math.sin(ttime), 0, 2*Math.cos(ttime));
+        planet.rotateX(1.2);
+        planet.rotateY(1);
+        renderGeometry(sphere, planet, g);
 
         for(int i = 1; i <= 4; i++){
             ring.identity();
