@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.Random;
 
 public class Sphere{
     private Matrix transform;
@@ -6,6 +7,9 @@ public class Sphere{
     private Geometry geometry;
 
     private double radius;
+    private Color color;
+
+    Random gen = new Random();
 
     private Vec3 position, velocity, acceleration, rotation, scale;
 
@@ -22,6 +26,8 @@ public class Sphere{
 
         rotation = new Vec3(0, 0, 0);
         scale = new Vec3(1, 1, 1);
+
+        color = new Color(Math.abs(gen.nextInt()) % 200, Math.abs(gen.nextInt()) % 200, Math.abs(gen.nextInt()) % 200);
     }
 
     public Sphere(Renderer r, double radius){
@@ -68,8 +74,8 @@ public class Sphere{
     }
 
     public void update(){
-        velocity = velocity.add(acceleration);
-        position = position.add(velocity);
+        velocity = velocity.add(acceleration.mul(.01));
+        position = position.add(velocity.mul(.01));
     }
 
     public void draw(){
@@ -77,6 +83,6 @@ public class Sphere{
         transform.rotate(rotation);
         transform.scale(scale);
         transform.translate(position);
-        renderer.renderGeometry(geometry, transform);
+        renderer.renderGeometry(geometry, transform, color);
     }
 }

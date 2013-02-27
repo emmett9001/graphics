@@ -23,10 +23,14 @@ public class Renderer{
     }
 
     public void renderGeometry(Geometry geo, Matrix mat){
-        renderGeometry(geo, mat, this.g);
+        renderGeometry(geo, mat, this.g, Color.BLACK);
     }
 
-    public void renderGeometry(Geometry geo, Matrix mat, Graphics g){
+    public void renderGeometry(Geometry geo, Matrix mat, Color col){
+        renderGeometry(geo, mat, this.g, col);
+    }
+
+    public void renderGeometry(Geometry geo, Matrix mat, Graphics g, Color col){
         int i, j;
         for (int e = 0 ; e < geo.numFaces(); e++) {
             int[] face = geo.getFace(e);
@@ -44,6 +48,7 @@ public class Renderer{
                 projectPoint(point0, a);
                 projectPoint(point1, b);
 
+                g.setColor(col);
                 g.drawLine(a[0], a[1], b[0], b[1]);
             }
         }
