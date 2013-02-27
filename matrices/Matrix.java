@@ -58,13 +58,27 @@ public class Matrix implements IMatrix {
     }
 
     public void translate(double x, double y, double z){
-        mat[3][0] += x;
-        mat[3][1] += y;
-        mat[3][2] += z;
+        double[][] mul = {
+            {1.0, 0.0, 0.0, 0.0},
+            {0.0, 1.0, 0.0, 0.0},
+            {0.0, 0.0, 1.0, 0.0},
+            {x, y, z, 1.0},
+        };
+        rightMultiply(new Matrix(mul));
+    }
+
+    public void translate(Vec3 trans){
+        translate(trans.x, trans.y, trans.z);
     }
 
     public void parent(Matrix par){
         translate(par.get(3,0), par.get(3,1), par.get(3,2));
+    }
+
+    public void rotate(Vec3 rot){
+        rotateX(rot.x);
+        rotateY(rot.y);
+        rotateZ(rot.z);
     }
 
     public void rotateX(double radians){
@@ -97,10 +111,18 @@ public class Matrix implements IMatrix {
         rightMultiply(new Matrix(mul));
     }
 
+    public void scale(Vec3 sc){
+        scale(sc.x, sc.y, sc.z);
+    }
+
     public void scale(double x, double y, double z){
-        mat[0][0] *= x;
-        mat[1][1] *= y;
-        mat[2][2] *= z;
+        double[][] mul = {
+            {x, 0.0, 0.0, 0.0},
+            {0.0, y, 0.0, 0.0},
+            {0.0, 0.0, z, 0.0},
+            {0.0, 0.0, 0.0, 1.0},
+        };
+        rightMultiply(new Matrix(mul));
     }
 
     public void leftMultiply(Matrix other){
