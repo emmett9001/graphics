@@ -1,64 +1,38 @@
-public class Geometry{
+import java.util.ArrayList;
+
+public class Geometry implements IGeometry{
     private double vertices[][];
     private int faces[][];
     private int M, N;
+    private ArrayList<Geometry> children;
+    Matrix globalMatrix;
     Matrix matrix = new Matrix();
 
     public Geometry(int M, int N){
         this.M = M;
         this.N = N;
+        this.children = new ArrayList<Geometry>();
+        matrix.identity();
     }
 
-    abstract class ParametricShape{
-        abstract double x(double u, double v);
-        abstract double y(double u, double v);
-        abstract double z(double u, double v);
+    public void add(Geometry child){
+        children.add(child);
     }
 
-    class Sphere extends ParametricShape{
-        double x(double u, double v){
-            return Math.cos(2*Math.PI*u) * Math.cos(Math.PI*(v-.5));
-        }
-        double y(double u, double v){
-            return Math.sin(2*Math.PI*u) * Math.cos(Math.PI*(v-.5));
-        }
-        double z(double u, double v){
-            return Math.sin(Math.PI*(v-.5));
-        }
+    public Geometry getChild(int i){
+        return children.get(i);
     }
 
-    class Torus extends ParametricShape{
-        double R, r;
-
-        public Torus(){
-            this.R = 3;
-            this.r = 1;
-        }
-        public Torus(double R, double r){
-            this.R = R;
-            this.r = r;
-        }
-        double x(double u, double v){
-            return Math.cos(2*Math.PI*u) * (R + Math.cos(2*Math.PI*v));
-        }
-        double y(double u, double v){
-            return Math.sin(2*Math.PI*u) * (R + Math.cos(2*Math.PI*v));
-        }
-        double z(double u, double v){
-            return Math.sin(2*Math.PI*v);
-        }
+    public Matrix getMatrix(){
+        return matrix;
     }
 
-    class Cylinder extends ParametricShape{
-        double x(double u, double v){
-            return Math.cos(2*Math.PI*u);
-        }
-        double y(double u, double v){
-            return Math.sin(2*Math.PI*u);
-        }
-        double z(double u, double v){
-            return 2 * v - 1;
-        }
+    public int getNumChildren(){
+        return children.size();
+    }
+
+    public void remove(Geometry child){
+        children.remove(child);
     }
 
     private int index(int M, int m, int n){
@@ -74,15 +48,21 @@ public class Geometry{
     }
 
     public int numFaces(){
-        return faces.length;
+        if(faces != null){
+            return faces.length;
+        }
+        return 0;
     }
 
     public int numVertices(){
-        return vertices.length;
+        if(vertices != null){
+            return vertices.length;
+        }
+        return 0;
     }
 
     public void buildSphere(){
-        buildParametricMesh(new Sphere());
+        buildParametricMesh(new PSphere());
     }
 
     public void buildTorus(){
