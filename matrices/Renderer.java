@@ -3,11 +3,17 @@ import java.awt.*;
 public class Renderer{
     int w, h;
     Graphics g;
+    World world;
     int a[], b[];
     double point0[], point1[];
 
     public Renderer(){
         this(1280, 700, (Graphics)null);
+    }
+
+    public Renderer(int width, int height, Graphics g, World world){
+        this(width, height, g);
+        this.world = world;
     }
 
     public Renderer(int width, int height, Graphics g){
@@ -30,6 +36,10 @@ public class Renderer{
         renderGeometry(geo, mat, this.g, col);
     }
 
+    public void renderGeometry(Geometry geo){
+        renderGeometry(geo, geo.getMatrix(), this.g, Color.black);
+    }
+
     public void renderGeometry(Geometry geo, Matrix mat, Graphics g, Color col){
         int i, j;
         for (int e = 0 ; e < geo.numFaces(); e++) {
@@ -50,6 +60,22 @@ public class Renderer{
 
                 g.setColor(col);
                 g.drawLine(a[0], a[1], b[0], b[1]);
+            }
+        }
+    }
+
+    public void render(){
+        _render(world.getRoot(), world.getRoot());
+    }
+
+    private void _render(Geometry node, Geometry parent){
+        node.getMatrix().rightMultiply(parent.getMatrix());
+        if(node.numFaces() > 0 && node.numVertices() > 0){
+            renderGeometry(node);
+        }
+        if(node.getNumChildren() != 0){
+            for(int i = 0; i < node.getNumChildren(); i++){
+                _render(node.getChild(i), node);
             }
         }
     }
