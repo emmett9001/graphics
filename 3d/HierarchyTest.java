@@ -7,7 +7,7 @@ public class HierarchyTest extends BufferedApplet{
 
     Renderer rnd;
     World world = new World();
-    Geometry root, ball, box, ball2;
+    Geometry root, bjoint, base, joint, mid, fjoint, end;
 
     long startTime = System.currentTimeMillis();
     boolean setupDone = false;
@@ -18,30 +18,54 @@ public class HierarchyTest extends BufferedApplet{
             rnd = new Renderer(w, h, g, world);
             root = world.getRoot();
 
-            ball = new Geometry(12, 12);
-            ball.buildSphere();
-            root.add(ball);
+            bjoint = new Geometry(0, 0);
+            root.add(bjoint);
 
-            box = new Geometry(0, 0);
-            box.buildCube();
-            ball.add(box);
+            base = new Geometry(0, 0);
+            base.buildCube();
+            bjoint.add(base);
 
-            ball2 = new Geometry(5, 5);
-            ball2.buildSphere();
-            ball.add(ball2);
+            joint = new Geometry(0, 0);
+            bjoint.add(joint);
+
+            mid = new Geometry(0, 0);
+            mid.buildCube();
+            joint.add(mid);
+
+            fjoint = new Geometry(0, 0);
+            joint.add(fjoint);
+
+            end = new Geometry(0, 0);
+            end.buildCube();
+            fjoint.add(end);
         }
         double ttime = (System.currentTimeMillis() - startTime) / 1000.0;
 
         g.setColor(Color.white);
         g.fillRect(0, 0, w, h);
-        g.setColor(Color.black);
 
-        ball.getMatrix().rotateY(.1);
+        bjoint.getMatrix().identity();
+        bjoint.getMatrix().rotateY(ttime);
+        bjoint.getMatrix().translate(0, -2, -4);
 
-        box.getMatrix().identity();
+        base.getMatrix().identity();
+        base.getMatrix().scale(.3, 2, .3);
 
-        ball2.getMatrix().identity();
-        ball2.getMatrix().translate(4, Math.sin(50*ttime), 0);
+        joint.getMatrix().identity();
+        joint.getMatrix().rotateZ(Math.sin(ttime));
+        joint.getMatrix().translate(0, 1.7, 0);
+
+        mid.getMatrix().identity();
+        mid.getMatrix().translate(0, 1, 0);
+        mid.getMatrix().scale(.3, 2, .3);
+
+        fjoint.getMatrix().identity();
+        fjoint.getMatrix().rotateZ(Math.sin(ttime));
+        fjoint.getMatrix().translate(0, 3.9, 0);
+
+        end.getMatrix().identity();
+        end.getMatrix().translate(0, 1, 0);
+        end.getMatrix().scale(.3, 1.5, .3);
 
         rnd.render();
     }
