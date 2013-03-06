@@ -7,6 +7,12 @@ public class Vec3{
         this.z = z;
     }
 
+    public void init(double x, double y, double z){
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
     public Vec3 add(Vec3 b){
         return new Vec3(this.x + b.x, this.y + b.y, this.z + b.z);
     }
