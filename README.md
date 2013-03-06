@@ -8,3 +8,9 @@ These applets can be viewed online at http://emmettbutler.com/graphics
 Some screenshots follow:
 
 ![image](http://emmettbutler.com/graphics/reflect3.png)
+![image](http://emmettbutler.com/graphics/rings.png)
+![image](http://emmettbutler.com/graphics/fk.png)
+![image](http://emmettbutler.com/graphics/planets.png)
+![image](http://emmettbutler.com/graphics/bouncyballs.png)
+
+Check out the deployed code on http://emmettbutler.com/graphics !
