@@ -1,14 +1,14 @@
 import java.awt.*;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class Renderer{
     int w, h;
     Graphics g;
     World world;
     int a[], b[];
-    int[][] triangleVerts1, triangleVerts2;
-    int[][] trapVerts1, trapVerts2;
-    int[] swapVertex;
     double point0[], point1[];
+    int[][][][] triangles;
 
     public Renderer(){
         this(1280, 700, (Graphics)null);
@@ -30,13 +30,7 @@ public class Renderer{
         point0 = new double[3];
         point1 = new double[3];
 
-        triangleVerts1 = new int[3][2];
-        triangleVerts2 = new int[3][2];
-
-        trapVerts1 = new int[3][2];
-        trapVerts2 = new int[3][2];
-
-        swapVertex = new int[2];
+        triangles = new int[5000][2][4][2];
     }
 
     public void renderGeometry(Geometry geo, Matrix mat){
@@ -76,48 +70,47 @@ public class Renderer{
     }
 
     public void renderScanConvertedGeometry(Geometry geo, Matrix mat){
-        int i;
         for (int e = 0 ; e < geo.numFaces(); e++) {
             int[] face = geo.getFace(e);
             for(int f = 0; f < face.length; f++){
-                i = face[f];
-                mat.transform(geo.getVertex(i), point0);
+                mat.transform(geo.getVertex(face[f]), point0);
                 projectPoint(point0, a);
 
+                // triangles[totalnumber][slicedpair][3vertices+D][2coordinates]
+                // create two triangles (triangles[e][0] and triangles[e][1])
+                // by splitting the face
                 if(f == 0 || f == 2){
-                    triangleVerts1[f] = a;
-                    triangleVerts2[f] = a;
+                    triangles[e][0][f] = a.clone();
+                    triangles[e][1][f] = a.clone();
                 } else if(f == 1){
-                    triangleVerts1[1] = a;
+                    triangles[e][0][1] = a.clone();
                 } else if(f == 3){
-                    triangleVerts2[1] = a;
+                    triangles[e][1][1] = a.clone();
                 }
             }
 
-            // sort triangle vertices
-            if(triangleVerts1[0][1] > triangleVerts1[1][1]){
-                swap(triangleVerts1[0], triangleVerts1[1]);
+            // now that we have two triangles, sort the vertices of each by Y component
+            for(int i = 0; i < 2; i++){
+                Arrays.sort(triangles[e][i], new Comparator<int[]>(){
+                    @Override
+                    public int compare(final int[] entry1, final int[] entry2){
+                        final int y1 = entry1[1];
+                        final int y2 = entry2[1];
+                        if(y1 > y2) return 1;
+                        if(y1 < y2) return -1;
+                        return 0;
+                    }
+                });
+                // A -triangles[e][i][0]
+                // B -triangles[e][i][1]
+                // C -triangles[e][i][2]
+                // D -triangles[e][i][3]
+                // calculate the split point (D) for the two trapezoids
+                triangles[e][i][3][1] = triangles[e][i][1][1];  // same scan line as B
+                int t = (triangles[e][i][1][1] - triangles[e][i][0][1]) / (triangles[e][i][2][1] - triangles[e][i][0][1]);
+                triangles[e][i][3][0] = triangles[e][i][0][0] + t * (triangles[e][i][2][0] - triangles[e][i][0][0]);
             }
-            if(triangleVerts1[1][1] > triangleVerts1[2][1]){
-                swap(triangleVerts1[2], triangleVerts1[1]);
-            }
-            // split first triangle into trapezoids
-
-            System.out.println();
-            for(int k = 0; k < 3; k++){
-                trapVerts1[k] = triangleVerts1[k];
-            }
-            // render the two trapezoids
-
-            // split second triangle into trapezoids
-            // render the two trapezoids
         }
-    }
-
-    private void swap(int[] a, int[] b){
-        swapVertex = a;
-        a = b;
-        b = swapVertex;
     }
 
     public void render(){

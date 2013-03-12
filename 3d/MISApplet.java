@@ -32,9 +32,9 @@ public class MISApplet extends Applet implements Runnable {
         mis.setAnimated(true);
         im = createImage(mis);      // MAKE MEMORY IMAGE SOURCE FOR FRAME BUFFER
 
-	initialize();
+    initialize();
 
-	startTime = clockTime();    // FETCH CLOCK TIME WHEN APPLET STARTS
+    startTime = clockTime();    // FETCH CLOCK TIME WHEN APPLET STARTS
         new Thread(this).start();   // START THE BACKGROUND RENDERING THREAD
     }
 
@@ -62,19 +62,19 @@ public class MISApplet extends Applet implements Runnable {
 
     private int rgb[] = new int[3];
     public void computeImage(double time) {
-	initFrame(time);                 // INITIALIZE COMPUTATION FOR FRAME
+        initFrame(time);                 // INITIALIZE COMPUTATION FOR FRAME
         int i = 0;
         for(int y = 0; y < H; y++)
         for(int x = 0; x < W; x++) { // COMPUTE COLOR FOR EACH PIXEL
-           setPixel(x, y, rgb);
-	   pix[i++] = pack(rgb[0],rgb[1],rgb[2]);
+            setPixel(x, y, rgb);
+            pix[i++] = pack(rgb[0],rgb[1],rgb[2]);
         }
     }
 
     public int pack(int red, int grn, int blu) {
        return 255<<24 | clip(red,0,255)<<16
-		      | clip(grn,0,255)<< 8
-		      | clip(blu,0,255)    ;
+              | clip(grn,0,255)<< 8
+              | clip(blu,0,255)    ;
     }
 
     public int unpack(int packedRGB, int component) {
