@@ -5,6 +5,9 @@ public class Renderer{
     Graphics g;
     World world;
     int a[], b[];
+    int[][] triangleVerts1, triangleVerts2;
+    int[][] trapVerts1, trapVerts2;
+    int[] swapVertex;
     double point0[], point1[];
 
     public Renderer(){
@@ -26,6 +29,14 @@ public class Renderer{
 
         point0 = new double[3];
         point1 = new double[3];
+
+        triangleVerts1 = new int[3][2];
+        triangleVerts2 = new int[3][2];
+
+        trapVerts1 = new int[3][2];
+        trapVerts2 = new int[3][2];
+
+        swapVertex = new int[2];
     }
 
     public void renderGeometry(Geometry geo, Matrix mat){
@@ -62,6 +73,51 @@ public class Renderer{
                 g.drawLine(a[0], a[1], b[0], b[1]);
             }
         }
+    }
+
+    public void renderScanConvertedGeometry(Geometry geo, Matrix mat){
+        int i;
+        for (int e = 0 ; e < geo.numFaces(); e++) {
+            int[] face = geo.getFace(e);
+            for(int f = 0; f < face.length; f++){
+                i = face[f];
+                mat.transform(geo.getVertex(i), point0);
+                projectPoint(point0, a);
+
+                if(f == 0 || f == 2){
+                    triangleVerts1[f] = a;
+                    triangleVerts2[f] = a;
+                } else if(f == 1){
+                    triangleVerts1[1] = a;
+                } else if(f == 3){
+                    triangleVerts2[1] = a;
+                }
+            }
+
+            // sort triangle vertices
+            if(triangleVerts1[0][1] > triangleVerts1[1][1]){
+                swap(triangleVerts1[0], triangleVerts1[1]);
+            }
+            if(triangleVerts1[1][1] > triangleVerts1[2][1]){
+                swap(triangleVerts1[2], triangleVerts1[1]);
+            }
+            // split first triangle into trapezoids
+
+            System.out.println();
+            for(int k = 0; k < 3; k++){
+                trapVerts1[k] = triangleVerts1[k];
+            }
+            // render the two trapezoids
+
+            // split second triangle into trapezoids
+            // render the two trapezoids
+        }
+    }
+
+    private void swap(int[] a, int[] b){
+        swapVertex = a;
+        a = b;
+        b = swapVertex;
     }
 
     public void render(){
