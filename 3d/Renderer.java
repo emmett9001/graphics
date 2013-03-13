@@ -69,7 +69,7 @@ public class Renderer{
         }
     }
 
-    public void renderScanConvertedGeometry(Geometry geo, Matrix mat){
+    public void renderScanConvertedGeometry(Geometry geo, Matrix mat, int[][][] pixels){
         for (int e = 0 ; e < geo.numFaces(); e++) {
             int[] face = geo.getFace(e);
             for(int f = 0; f < face.length; f++){
@@ -107,8 +107,30 @@ public class Renderer{
                 // D -triangles[e][i][3]
                 // calculate the split point (D) for the two trapezoids
                 triangles[e][i][3][1] = triangles[e][i][1][1];  // same scan line as B
-                int t = (triangles[e][i][1][1] - triangles[e][i][0][1]) / (triangles[e][i][2][1] - triangles[e][i][0][1]);
-                triangles[e][i][3][0] = triangles[e][i][0][0] + t * (triangles[e][i][2][0] - triangles[e][i][0][0]);
+                int t = (int)((triangles[e][i][1][1] - triangles[e][i][0][1]) / (double)(triangles[e][i][2][1] - triangles[e][i][0][1]));
+                triangles[e][i][3][0] = (int)(triangles[e][i][0][0] + (double)t * (double)(triangles[e][i][2][0] - triangles[e][i][0][0]));
+            }
+        }
+
+        for(int e = 0; e < triangles.length; e++){
+            for(int tri = 0; tri < 2; tri++){
+                int yT, yB, xLT, xRT, xLB, xRB;
+                yT = triangles[e][tri][1][1];
+                yB = triangles[e][tri][2][1];
+                xLT = triangles[e][tri][1][0];
+                xRT = triangles[e][tri][3][0];
+                xLB = triangles[e][tri][2][0];
+                xRB = triangles[e][tri][2][0];
+                for(int scanline = yT; scanline < yB; scanline++){
+                    int t = (int)((scanline - yT) / (double)(yB - yT));
+                    int xL = xLT + t * (xLB - xLT);
+                    int xR = xRT + t * (xRB - xRT);
+                    for(int pix = xL; pix < xR; pix++){
+                        pixels[scanline][pix][0] = 255;
+                        pixels[scanline][pix][1] = 255;
+                        pixels[scanline][pix][2] = 255;
+                    }
+                }
             }
         }
     }
