@@ -8,7 +8,10 @@ public class Renderer{
     World world;
     int a[], b[];
     double point0[], point1[];
-    int[][][][] triangles;
+    int[][][] tmpTriangles;
+    int[][][] tmpTrapezoids;
+    int[][] tmpProjectedFace;
+    int[] D;
 
     public Renderer(){
         this(1280, 700, (Graphics)null);
@@ -30,7 +33,10 @@ public class Renderer{
         point0 = new double[3];
         point1 = new double[3];
 
-        triangles = new int[5000][2][4][2];
+        tmpTriangles = new int[2][3][2];
+        tmpTrapezoids = new int[4][4][2];
+        tmpProjectedFace = new int[4][2];
+        D = new int[2];
     }
 
     public void renderGeometry(Geometry geo, Matrix mat){
@@ -69,66 +75,101 @@ public class Renderer{
         }
     }
 
+    private void trianglesFromFace(){
+        tmpTriangles[0][0] = tmpProjectedFace[0].clone();
+        tmpTriangles[0][1] = tmpProjectedFace[1].clone();
+        tmpTriangles[0][2] = tmpProjectedFace[2].clone();
+
+        tmpTriangles[1][0] = tmpProjectedFace[2].clone();
+        tmpTriangles[1][1] = tmpProjectedFace[3].clone();
+        tmpTriangles[1][2] = tmpProjectedFace[1].clone();
+    }
+
+    private void sortTriangleVertices(){
+        for(int i = 0; i < 2; i++){
+            Arrays.sort(tmpTriangles[i], new Comparator<int[]>(){
+                @Override
+                public int compare(final int[] entry1, final int[] entry2){
+                    final int y1 = entry1[1];
+                    final int y2 = entry2[1];
+                    if(y1 > y2) return 1;
+                    if(y1 < y2) return -1;
+                    return 0;
+                }
+            });
+        }
+    }
+
+    private void trapezoidsFromTriangles(){
+        for(int i = 0; i < 2; i++){
+            int[] A = tmpTriangles[i][0].clone();
+            int[] B = tmpTriangles[i][1].clone();
+            int[] C = tmpTriangles[i][2].clone();
+            D[1] = A[1];
+            double t = (double)(B[1] - A[1]) / (double)(C[1] - A[1]);
+            D[0] = (int)((double)A[0] + (t * (C[0] - A[0])));
+
+            tmpTrapezoids[2*i][0] = A.clone();
+            tmpTrapezoids[2*i][1] = A.clone();
+            tmpTrapezoids[2*i][2] = B.clone();
+            tmpTrapezoids[2*i][3] = D.clone();
+
+            tmpTrapezoids[(2*i+1)][0] = B.clone();
+            tmpTrapezoids[(2*i+1)][1] = D.clone();
+            tmpTrapezoids[(2*i+1)][2] = C.clone();
+            tmpTrapezoids[(2*i+1)][3] = C.clone();
+        }
+    }
+
     public void renderScanConvertedGeometry(Geometry geo, Matrix mat, int[][][] pixels){
         for (int e = 0 ; e < geo.numFaces(); e++) {
             int[] face = geo.getFace(e);
             for(int f = 0; f < face.length; f++){
                 mat.transform(geo.getVertex(face[f]), point0);
                 projectPoint(point0, a);
-
-                // triangles[totalnumber][slicedpair][3vertices+D][2coordinates]
-                // create two triangles (triangles[e][0] and triangles[e][1])
-                // by splitting the face
-                if(f == 0 || f == 2){
-                    triangles[e][0][f] = a.clone();
-                    triangles[e][1][f] = a.clone();
-                } else if(f == 1){
-                    triangles[e][0][1] = a.clone();
-                } else if(f == 3){
-                    triangles[e][1][1] = a.clone();
-                }
+                tmpProjectedFace[f] = a.clone();
             }
 
-            // now that we have two triangles, sort the vertices of each by Y component
-            for(int i = 0; i < 2; i++){
-                Arrays.sort(triangles[e][i], new Comparator<int[]>(){
-                    @Override
-                    public int compare(final int[] entry1, final int[] entry2){
-                        final int y1 = entry1[1];
-                        final int y2 = entry2[1];
-                        if(y1 > y2) return 1;
-                        if(y1 < y2) return -1;
-                        return 0;
+            trianglesFromFace();
+            sortTriangleVertices();
+            trapezoidsFromTriangles();
+
+            for(int i = 0; i < 4; i++){
+                int[] lt, rt, lb, rb;
+                double yT, yB, xLT, xRT, xLB, xRB;
+                /*
+                for(int j = 0; j < 4; j++){
+                    for(int k = 0; k < 2; k++){
+                        System.out.println("trapezoids " + i + "- " + j + ": " + tmpTrapezoids[i][j][k]);
                     }
-                });
-                // A -triangles[e][i][0]
-                // B -triangles[e][i][1]
-                // C -triangles[e][i][2]
-                // D -triangles[e][i][3]
-                // calculate the split point (D) for the two trapezoids
-                triangles[e][i][3][1] = triangles[e][i][1][1];  // same scan line as B
-                int t = (int)((triangles[e][i][1][1] - triangles[e][i][0][1]) / (double)(triangles[e][i][2][1] - triangles[e][i][0][1]));
-                triangles[e][i][3][0] = (int)(triangles[e][i][0][0] + (double)t * (double)(triangles[e][i][2][0] - triangles[e][i][0][0]));
-            }
-        }
+                }
+                */
+                lt = tmpTrapezoids[i][0];
+                rt = tmpTrapezoids[i][1];
+                lb = tmpTrapezoids[i][2];
+                rb = tmpTrapezoids[i][3];
 
-        for(int e = 0; e < triangles.length; e++){
-            for(int tri = 0; tri < 2; tri++){
-                int yT, yB, xLT, xRT, xLB, xRB;
-                yT = triangles[e][tri][1][1];
-                yB = triangles[e][tri][2][1];
-                xLT = triangles[e][tri][1][0];
-                xRT = triangles[e][tri][3][0];
-                xLB = triangles[e][tri][2][0];
-                xRB = triangles[e][tri][2][0];
-                for(int scanline = yT; scanline < yB; scanline++){
-                    int t = (int)((scanline - yT) / (double)(yB - yT));
-                    int xL = xLT + t * (xLB - xLT);
-                    int xR = xRT + t * (xRB - xRT);
-                    for(int pix = xL; pix < xR; pix++){
-                        pixels[scanline][pix][0] = 255;
-                        pixels[scanline][pix][1] = 255;
-                        pixels[scanline][pix][2] = 255;
+                yT = lt[1];
+                yB = lb[1];
+                xLT = lt[0];
+                xRT = rt[0];
+                xLB = lb[0];
+                xRB = rb[0];
+                for(int scanline = (int)yT; scanline <= yB; scanline++){
+                    double t = (scanline - yT) / (yB - yT);
+                    double xL = xLT + t * (xLB - xLT);
+                    double xR = xRT + t * (xRB - xRT);
+                    if(xL > xR){
+                        double tmp = xL;
+                        xL = xR;
+                        xR = tmp;
+                    }
+                    for(int pix = (int)xL; pix <= xR; pix++){
+                        try{
+                            pixels[scanline][pix][0] = 255;
+                            pixels[scanline][pix][1] = 255;
+                            pixels[scanline][pix][2] = 255;
+                        } catch(ArrayIndexOutOfBoundsException f){}
                     }
                 }
             }

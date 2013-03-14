@@ -1,19 +1,20 @@
 public class MyMISApplet extends MISApplet {
     double t = 0;
-    Geometry cube = new Geometry(0, 0);
+    Geometry cube = new Geometry(20, 20);
     Renderer rnd = new Renderer();
     int[][][] pixels;
 
     public void initialize(){
         pixels = new int[H][W][3];
-        cube.buildCube();
+        cube.buildTorus();
     }
 
     public void initFrame(double time) {
         t = 5 * time;
 
         cube.getMatrix().identity();
-        cube.getMatrix().rotateY(time);
+        cube.getMatrix().rotateY(.2*time);
+        cube.getMatrix().translate(0, 0, -3);
 
         for(int i = 0; i < H; i++){
             for(int j = 0; j < W; j++){
