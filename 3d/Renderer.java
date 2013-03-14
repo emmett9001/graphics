@@ -159,7 +159,21 @@ public class Renderer{
     private boolean frontFacingFace(){
         // return true if the triangles in tmpTriangles are facing front
         // false otherwise
-        return true;
+        double sum = 0;
+        for(int i = 0; i < 3; i++){
+            int[] A = tmpTriangles[0][i].clone();
+            int incremented = i+1;
+            if(incremented > 2){
+                incremented = 0;
+            }
+            int[] B = tmpTriangles[0][incremented].clone();
+
+            sum += ((double)((double)(A[0] - B[0])*(double)(A[1] + B[1]))) / 2.0;
+        }
+        if(sum > 0){
+            return true;
+        }
+        return false;
     }
 
     public void renderScanConvertedGeometry(Geometry geo, Matrix mat, int[][][] pixels){
@@ -172,11 +186,10 @@ public class Renderer{
             }
 
             trianglesFromFace();
-            sortTriangleVertices();
 
             if(frontFacingFace()){
+                sortTriangleVertices();
                 trapezoidsFromTriangles();
-
                 for(int i = 0; i < 4; i++){
                     scanconvertTrapezoid(i, pixels);
                 }
