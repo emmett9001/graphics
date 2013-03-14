@@ -6,7 +6,7 @@ public class MyMISApplet extends MISApplet {
 
     public void initialize(){
         pixels = new int[H][W][3];
-        cube.buildSphere();
+        cube.buildTorus();
     }
 
     public void initFrame(double time) {
@@ -15,7 +15,7 @@ public class MyMISApplet extends MISApplet {
         cube.getMatrix().identity();
         cube.getMatrix().rotateY(time);
         cube.getMatrix().rotateX(time);
-        cube.getMatrix().translate(0, 0, 3);
+        cube.getMatrix().translate(0, 0, -3);
 
         for(int i = 0; i < H; i++){
             for(int j = 0; j < W; j++){
