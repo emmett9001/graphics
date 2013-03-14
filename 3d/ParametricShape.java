@@ -6,10 +6,10 @@ public abstract class ParametricShape{
 
 class PSphere extends ParametricShape{
     double x(double u, double v){
-        return Math.cos(2*Math.PI*u) * Math.cos(Math.PI*(v-.5));
+        return Math.sin(2*Math.PI*u) * Math.cos(Math.PI*(v-.5));
     }
     double y(double u, double v){
-        return Math.sin(2*Math.PI*u) * Math.cos(Math.PI*(v-.5));
+        return Math.cos(2*Math.PI*u) * Math.cos(Math.PI*(v-.5));
     }
     double z(double u, double v){
         return Math.sin(Math.PI*(v-.5));
