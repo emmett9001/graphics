@@ -123,6 +123,45 @@ public class Renderer{
         }
     }
 
+    private void scanconvertTrapezoid(int i, int[][][] pixels){
+        int[] lt, rt, lb, rb;
+        double yT, yB, xLT, xRT, xLB, xRB;
+        lt = tmpTrapezoids[i][0];
+        rt = tmpTrapezoids[i][1];
+        lb = tmpTrapezoids[i][2];
+        rb = tmpTrapezoids[i][3];
+
+        yT = lt[1];
+        yB = lb[1];
+        xLT = lt[0];
+        xRT = rt[0];
+        xLB = lb[0];
+        xRB = rb[0];
+        for(int scanline = (int)yT; scanline <= yB; scanline++){
+            double t = (scanline - yT) / (yB - yT);
+            double xL = xLT + t * (xLB - xLT);
+            double xR = xRT + t * (xRB - xRT);
+            if(xL > xR){
+                double tmp = xL;
+                xL = xR;
+                xR = tmp;
+            }
+            for(int pix = (int)xL; pix <= xR; pix++){
+                try{
+                    pixels[scanline][pix][0] = 255;
+                    pixels[scanline][pix][1] = 255;
+                    pixels[scanline][pix][2] = 255;
+                } catch(ArrayIndexOutOfBoundsException f){}
+            }
+        }
+    }
+
+    private boolean frontFacingFace(){
+        // return true if the triangles in tmpTriangles are facing front
+        // false otherwise
+        return true;
+    }
+
     public void renderScanConvertedGeometry(Geometry geo, Matrix mat, int[][][] pixels){
         for (int e = 0 ; e < geo.numFaces(); e++) {
             int[] face = geo.getFace(e);
@@ -134,45 +173,12 @@ public class Renderer{
 
             trianglesFromFace();
             sortTriangleVertices();
-            trapezoidsFromTriangles();
 
-            for(int i = 0; i < 4; i++){
-                int[] lt, rt, lb, rb;
-                double yT, yB, xLT, xRT, xLB, xRB;
-                /*
-                for(int j = 0; j < 4; j++){
-                    for(int k = 0; k < 2; k++){
-                        System.out.println("trapezoids " + i + "- " + j + ": " + tmpTrapezoids[i][j][k]);
-                    }
-                }
-                */
-                lt = tmpTrapezoids[i][0];
-                rt = tmpTrapezoids[i][1];
-                lb = tmpTrapezoids[i][2];
-                rb = tmpTrapezoids[i][3];
+            if(frontFacingFace()){
+                trapezoidsFromTriangles();
 
-                yT = lt[1];
-                yB = lb[1];
-                xLT = lt[0];
-                xRT = rt[0];
-                xLB = lb[0];
-                xRB = rb[0];
-                for(int scanline = (int)yT; scanline <= yB; scanline++){
-                    double t = (scanline - yT) / (yB - yT);
-                    double xL = xLT + t * (xLB - xLT);
-                    double xR = xRT + t * (xRB - xRT);
-                    if(xL > xR){
-                        double tmp = xL;
-                        xL = xR;
-                        xR = tmp;
-                    }
-                    for(int pix = (int)xL; pix <= xR; pix++){
-                        try{
-                            pixels[scanline][pix][0] = 255;
-                            pixels[scanline][pix][1] = 255;
-                            pixels[scanline][pix][2] = 255;
-                        } catch(ArrayIndexOutOfBoundsException f){}
-                    }
+                for(int i = 0; i < 4; i++){
+                    scanconvertTrapezoid(i, pixels);
                 }
             }
         }
