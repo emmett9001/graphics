@@ -40,10 +40,10 @@ class Torus extends ParametricShape{
 
 class Cylinder extends ParametricShape{
     double x(double u, double v){
-        return Math.cos(2*Math.PI*u);
+        return Math.sin(2*Math.PI*u);
     }
     double y(double u, double v){
-        return Math.sin(2*Math.PI*u);
+        return Math.cos(2*Math.PI*u);
     }
     double z(double u, double v){
         return 2 * v - 1;
