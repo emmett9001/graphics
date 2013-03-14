@@ -11,7 +11,7 @@ public class Renderer{
     int[][][] tmpTriangles;
     int[][][] tmpTrapezoids;
     int[][] tmpProjectedFace;
-    int[] D;
+    double[] D;
 
     public Renderer(){
         this(1280, 700, (Graphics)null);
@@ -36,7 +36,7 @@ public class Renderer{
         tmpTriangles = new int[2][3][2];
         tmpTrapezoids = new int[4][4][2];
         tmpProjectedFace = new int[4][2];
-        D = new int[2];
+        D = new double[2];
     }
 
     public void renderGeometry(Geometry geo, Matrix mat){
@@ -76,13 +76,13 @@ public class Renderer{
     }
 
     private void trianglesFromFace(){
-        tmpTriangles[0][0] = tmpProjectedFace[0].clone();
-        tmpTriangles[0][1] = tmpProjectedFace[1].clone();
-        tmpTriangles[0][2] = tmpProjectedFace[2].clone();
+        tmpTriangles[0][0] = tmpProjectedFace[1].clone();
+        tmpTriangles[0][1] = tmpProjectedFace[2].clone();
+        tmpTriangles[0][2] = tmpProjectedFace[0].clone();
 
-        tmpTriangles[1][0] = tmpProjectedFace[2].clone();
-        tmpTriangles[1][1] = tmpProjectedFace[3].clone();
-        tmpTriangles[1][2] = tmpProjectedFace[1].clone();
+        tmpTriangles[1][0] = tmpProjectedFace[0].clone();
+        tmpTriangles[1][1] = tmpProjectedFace[2].clone();
+        tmpTriangles[1][2] = tmpProjectedFace[3].clone();
     }
 
     private void sortTriangleVertices(){
@@ -107,17 +107,19 @@ public class Renderer{
             int[] C = tmpTriangles[i][2].clone();
             D[1] = A[1];
             double t = (double)(B[1] - A[1]) / (double)(C[1] - A[1]);
-            D[0] = (int)((double)A[0] + (t * (C[0] - A[0])));
+            D[0] = (double)A[0] + (t * (double)(C[0] - A[0]));
 
             tmpTrapezoids[2*i][0] = A.clone();
             tmpTrapezoids[2*i][1] = A.clone();
             tmpTrapezoids[2*i][2] = B.clone();
-            tmpTrapezoids[2*i][3] = D.clone();
+            tmpTrapezoids[2*i][3][0] = (int)D[0];
+            tmpTrapezoids[2*i][3][1] = (int)D[1];
 
-            tmpTrapezoids[(2*i+1)][0] = B.clone();
-            tmpTrapezoids[(2*i+1)][1] = D.clone();
-            tmpTrapezoids[(2*i+1)][2] = C.clone();
-            tmpTrapezoids[(2*i+1)][3] = C.clone();
+            tmpTrapezoids[(2*i)+1][0] = B.clone();
+            tmpTrapezoids[(2*i)+1][1][0] = (int)D[0];
+            tmpTrapezoids[(2*i)+1][1][1] = (int)D[1];
+            tmpTrapezoids[(2*i)+1][2] = C.clone();
+            tmpTrapezoids[(2*i)+1][3] = C.clone();
         }
     }
 
