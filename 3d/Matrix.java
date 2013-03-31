@@ -1,6 +1,8 @@
 public class Matrix implements IMatrix {
     public double[][] mat;
     private double[][] temp;
+    private double[][] invert;
+    private double[][] transposed;
     private Matrix inherit;
 
     // keeping things straight in my head...
@@ -28,6 +30,8 @@ public class Matrix implements IMatrix {
     public Matrix(){
         mat = new double[4][4];
         temp = new double[4][4];
+        invert = new double[4][4];
+        transposed = new double[4][4];
         //inherit = new Matrix();
     }
 
@@ -172,6 +176,36 @@ public class Matrix implements IMatrix {
                     mul = src[j];
                 }
                 dst[i] += mul * mat[j][i];
+            }
+        }
+        // ((M.invert).transpose) DOT N
+        temp[0] = mat[0].clone();
+        temp[1] = mat[1].clone();
+        temp[2] = mat[2].clone();
+        temp[3] = mat[3].clone();
+        Invert.invert(temp, invert);
+        transpose(invert, transposed);
+        //pp(transposed);
+
+        dst[3] = (((src[3] - -1) * (255 - 0)) / (1 - -1)) + 0;
+        dst[4] = (((src[4] - -1) * (255 - 0)) / (1 - -1)) + 0;
+        dst[5] = (((src[5] - -1) * (255 - 0)) / (1 - -1)) + 0;
+    }
+
+    private void transpose(double[][] src, double[][] dst){
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
+                dst[i][j] = src[j][i];
+            }
+        }
+    }
+
+    private void transformNormal(double[][] mat, double[] norm, double[] dst){
+        for(int i = 0; i < mat.length; i++){
+            for(int j = 0; j < mat[i].length; j++){
+                for(int k = 0; k < mat[i].length; k++){
+                    //dst[i] = 
+                }
             }
         }
     }

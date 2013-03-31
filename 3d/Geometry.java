@@ -78,15 +78,15 @@ public class Geometry implements IGeometry{
     }
 
     public void buildCube(){
-        vertices = new double[24][3];
+        vertices = new double[24][6];
         faces = new int[6][4];
         double[][] v = {
-            {-1, -1, -1}, {1, -1, -1}, {1, 1, -1}, {-1, 1, -1},  // front
-            {-1, 1, -1},  {1, 1, -1},  {1, 1, 1},  {-1, 1, 1},  // top
-            {-1, -1, -1}, {-1, -1, 1}, {1, -1, 1},  {1, -1, -1}, // bottom
-            {1, -1, -1},  {1, -1, 1},  {1, 1, 1},  {1, 1, -1},  // right
-            {-1, -1, -1}, {-1, 1, -1}, {-1, 1, 1}, {-1, -1, 1}, // left
-            {-1, -1, 1}, {-1, 1, 1}, {1, 1, 1}, {1, -1, 1} // back
+            {-1, -1, -1, 0, 0, -1}, {1, -1, -1, 0, 0, -1}, {1, 1, -1, 0, 0, -1}, {-1, 1, -1, 0, 0, -1},
+            {-1, 1, -1, 0, 1, 0},  {1, 1, -1, 0, 1, 0},  {1, 1, 1, 0, 1, 0},  {-1, 1, 1, 0, 1, 0},
+            {-1, -1, -1, 0, -1, 0}, {-1, -1, 1, 0, -1, 0}, {1, -1, 1, 0, -1, 0},  {1, -1, -1, 0, -1, 0},
+            {1, -1, -1, 1, 0, 0},  {1, -1, 1, 1, 0, 0},  {1, 1, 1, 1, 0, 0},  {1, 1, -1, 1, 0, 0},
+            {-1, -1, -1, -1, 0, 0}, {-1, 1, -1, -1, 0, 0}, {-1, 1, 1, -1, 0, 0}, {-1, -1, 1, -1, 0, 0},
+            {-1, -1, 1, 0, 0, 1}, {-1, 1, 1, 0, 0, 1}, {1, 1, 1, 0, 0, 1}, {1, -1, 1, 0, 0, 1}
         };
         int[][] f = {
             {0, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11},
@@ -96,7 +96,7 @@ public class Geometry implements IGeometry{
     }
 
     private void buildParametricMesh(ParametricShape shape){
-        vertices = new double[(M+2)*(N+2)][3];
+        vertices = new double[(M+2)*(N+2)][6];
         faces = new int[(M+2)*(N+2)][4];
 
         double u = 0, v = 0;
@@ -105,6 +105,9 @@ public class Geometry implements IGeometry{
                 vertices[index(M, m, n)][0] = shape.x(u,v);
                 vertices[index(M, m, n)][1] = shape.y(u,v);
                 vertices[index(M, m, n)][2] = shape.z(u,v);
+                vertices[index(M, m, n)][3] = shape.nx(u,v);
+                vertices[index(M, m, n)][4] = shape.ny(u,v);
+                vertices[index(M, m, n)][5] = shape.nz(u,v);
                 v += 1.0/N;
 
                 if(m != M && n != N){
