@@ -186,15 +186,15 @@ public class Renderer{
             }
             for(int pix = (int)xL; pix <= xR; pix++){
                 double xPct = pix / (xR - xL);
-                double pZ = (double)LERP(t, pzXL, pzXR);
-                if(pZ > zbuf[scanline][pix]){
-                    zbuf[scanline][pix] = pZ;
-                    try{
+                double pZ = LERP(t, pzXL, pzXR);
+                try{
+                    if(pZ > zbuf[scanline][pix]){
+                        zbuf[scanline][pix] = pZ;
                         pixels[scanline][pix][0] = (int)LERP(t, nxXL, nxXR);
                         pixels[scanline][pix][1] = (int)LERP(t, nyXL, nyXR);
                         pixels[scanline][pix][2] = (int)LERP(t, nzXL, nzXR);
-                    } catch(ArrayIndexOutOfBoundsException f){}
-                }
+                    }
+                } catch(ArrayIndexOutOfBoundsException f){}
             }
         }
     }

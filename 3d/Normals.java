@@ -1,6 +1,6 @@
 public class Normals extends MISApplet {
     double t = 0;
-    Geometry cube = new Geometry(20, 20);
+    Geometry cube = new Geometry(50, 30);
     Geometry sphere = new Geometry(20, 20);
     Renderer rnd = new Renderer();
     int[][][] pixels;
@@ -9,7 +9,7 @@ public class Normals extends MISApplet {
     public void initialize(){
         pixels = new int[H][W][3];
         zbuffer = new double[H][W];
-        cube.buildSphere();
+        cube.buildTorus();
         sphere.buildSphere();
     }
 
@@ -17,11 +17,13 @@ public class Normals extends MISApplet {
         t = 5 * time;
 
         cube.getMatrix().identity();
-        cube.getMatrix().rotateY(3*time);
+        cube.getMatrix().rotateY(time);
+        cube.getMatrix().translate(0, 0, -3);
 
         sphere.getMatrix().identity();
         sphere.getMatrix().translate(2, 0, 0);
         sphere.getMatrix().rotateY(-1*time);
+        sphere.getMatrix().translate(0, 0, -1);
 
         for(int i = 0; i < H; i++){
             for(int j = 0; j < W; j++){
