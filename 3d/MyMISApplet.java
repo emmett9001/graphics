@@ -3,6 +3,7 @@ public class MyMISApplet extends MISApplet {
     Geometry cube = new Geometry(20, 20);
     Renderer rnd = new Renderer();
     int[][][] pixels;
+    double[][] zbuffer;
 
     public void initialize(){
         pixels = new int[H][W][3];
@@ -22,10 +23,11 @@ public class MyMISApplet extends MISApplet {
                 pixels[i][j][0] = 0;
                 pixels[i][j][1] = 0;
                 pixels[i][j][2] = 0;
+                zbuffer[i][j] = -1*rnd.getFocalLength();
             }
         }
 
-        rnd.renderScanConvertedGeometry(cube, cube.getMatrix(), pixels);
+        rnd.renderScanConvertedGeometry(cube, cube.getMatrix(), pixels, zbuffer);
     }
 
     public void setPixel(int x, int y, int rgb[]) {

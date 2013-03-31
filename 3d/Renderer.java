@@ -13,6 +13,7 @@ public class Renderer{
     int[][][] tmpTrapezoids;
     int[][] tmpProjectedFace;
     double[] D;
+    double FL;
 
     public Renderer(){
         this(1280, 700, (Graphics)null);
@@ -38,6 +39,12 @@ public class Renderer{
         tmpTrapezoids = new int[4][4][6];
         tmpProjectedFace = new int[4][6];
         D = new double[6];
+
+        FL = 7.0;
+    }
+
+    public double getFocalLength(){
+        return FL;
     }
 
     public void renderGeometry(Geometry geo, Matrix mat){
@@ -106,13 +113,19 @@ public class Renderer{
             int[] A = tmpTriangles[i][0].clone();
             int[] B = tmpTriangles[i][1].clone();
             int[] C = tmpTriangles[i][2].clone();
-            D[1] = A[1];
             double t = (double)(B[1] - A[1]) / (double)(C[1] - A[1]);
             D[0] = (double)A[0] + (t * (double)(C[0] - A[0]));
+            D[1] = A[1];
             D[2] = A[2];
-            D[3] = A[3];
-            D[4] = A[4];
-            D[5] = A[5];
+            D[3] = LERP(t, A[3], C[3]);
+            D[4] = LERP(t, A[4], C[4]);
+            D[5] = LERP(t, A[5], C[5]);
+
+            /*System.out.println();
+            System.out.println("r: " + D[3]);
+            System.out.println("g: " + D[4]);
+            System.out.println("b: " + D[5]);
+            */
 
             tmpTrapezoids[2*i][0] = A.clone();
             tmpTrapezoids[2*i][1] = A.clone();
@@ -136,7 +149,7 @@ public class Renderer{
         }
     }
 
-    private void scanconvertTrapezoid(int i, int[][][] pixels){
+    private void scanconvertTrapezoid(int i, int[][][] pixels, double[][] zbuf){
         int[] lt, rt, lb, rb;
         double yT, yB, xLT, xRT, xLB, xRB;
         lt = tmpTrapezoids[i][0];
@@ -150,9 +163,20 @@ public class Renderer{
         xRT = rt[0];
         xLB = lb[0];
         xRB = rb[0];
+
         for(int scanline = (int)yT; scanline <= yB; scanline++){
-            double yPct = scanline / (yB - yT);
             double t = (scanline - yT) / (yB - yT);
+
+            double pzXL = LERP(t, lt[2], lb[2]);
+            double nxXL = LERP(t, lt[3], lb[3]);
+            double nyXL = LERP(t, lt[4], lb[4]);
+            double nzXL = LERP(t, lt[5], lb[5]);
+
+            double pzXR = LERP(t, rt[2], rb[2]);
+            double nxXR = LERP(t, rt[3], rb[3]);
+            double nyXR = LERP(t, rt[4], rb[4]);
+            double nzXR = LERP(t, rt[5], rb[5]);
+
             double xL = xLT + t * (xLB - xLT);
             double xR = xRT + t * (xRB - xRT);
             if(xL > xR){
@@ -162,11 +186,15 @@ public class Renderer{
             }
             for(int pix = (int)xL; pix <= xR; pix++){
                 double xPct = pix / (xR - xL);
-                try{
-                    pixels[scanline][pix][0] = lt[3];
-                    pixels[scanline][pix][1] = lt[4];
-                    pixels[scanline][pix][2] = lt[5];
-                } catch(ArrayIndexOutOfBoundsException f){}
+                double pZ = (double)LERP(t, pzXL, pzXR);
+                if(pZ > zbuf[scanline][pix]){
+                    zbuf[scanline][pix] = pZ;
+                    try{
+                        pixels[scanline][pix][0] = (int)LERP(t, nxXL, nxXR);
+                        pixels[scanline][pix][1] = (int)LERP(t, nyXL, nyXR);
+                        pixels[scanline][pix][2] = (int)LERP(t, nzXL, nzXR);
+                    } catch(ArrayIndexOutOfBoundsException f){}
+                }
             }
         }
     }
@@ -191,13 +219,12 @@ public class Renderer{
         return false;
     }
 
-    public void renderScanConvertedGeometry(Geometry geo, Matrix mat, int[][][] pixels){
+    public void renderScanConvertedGeometry(Geometry geo, Matrix mat, int[][][] pixels, double[][] zbuf){
         for (int e = 0 ; e < geo.numFaces(); e++) {
             int[] face = geo.getFace(e);
             for(int f = 0; f < face.length; f++){
                 mat.transform(geo.getVertex(face[f]), point0);
                 projectPoint(point0, a);
-                System.out.println(a[4]);
                 tmpProjectedFace[f] = a.clone();
             }
 
@@ -207,7 +234,7 @@ public class Renderer{
                 sortTriangleVertices();
                 trapezoidsFromTriangles();
                 for(int i = 0; i < 4; i++){
-                    scanconvertTrapezoid(i, pixels);
+                    scanconvertTrapezoid(i, pixels, zbuf);
                 }
             }
         }
@@ -230,7 +257,6 @@ public class Renderer{
     }
 
     private void projectPoint(double[] xyz, int[] pxy) {
-        double FL = 7.0;
 
         double x = xyz[0];
         double y = xyz[1];
@@ -238,7 +264,7 @@ public class Renderer{
 
         pxy[0] = w / 2 + (int)(h * x / (FL - z));
         pxy[1] = h / 2 - (int)(h * y / (FL - z));
-        pxy[2] = (int)z / (int)(FL - z);
+        pxy[2] = (int)(FL * z) / (int)(FL - z);
         pxy[3] = (int)xyz[3];
         pxy[4] = (int)xyz[4];
         pxy[5] = (int)xyz[5];
@@ -246,6 +272,10 @@ public class Renderer{
 
     private int map(double normal){
         return (int)((normal + 1.0) * 255 / 2.0);
+    }
+
+    private double LERP(double percent, double a, double b){
+        return percent * (b - a) + a;
     }
 
 }
