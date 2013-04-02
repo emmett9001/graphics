@@ -24,6 +24,11 @@ public class Renderer{
         this.world = world;
     }
 
+    public Renderer(int width, int height, World world){
+        this(width, height, (Graphics)null);
+        this.world = world;
+    }
+
     public Renderer(int width, int height, Graphics g){
         this.w = width;
         this.h = height;
@@ -84,9 +89,9 @@ public class Renderer{
     }
 
     private void trianglesFromFace(){
-        tmpTriangles[0][0] = tmpProjectedFace[1].clone();
-        tmpTriangles[0][1] = tmpProjectedFace[2].clone();
-        tmpTriangles[0][2] = tmpProjectedFace[0].clone();
+        tmpTriangles[0][0] = tmpProjectedFace[0].clone();
+        tmpTriangles[0][1] = tmpProjectedFace[1].clone();
+        tmpTriangles[0][2] = tmpProjectedFace[2].clone();
 
         tmpTriangles[1][0] = tmpProjectedFace[0].clone();
         tmpTriangles[1][1] = tmpProjectedFace[2].clone();
@@ -116,16 +121,10 @@ public class Renderer{
             double t = (double)(B[1] - A[1]) / (double)(C[1] - A[1]);
             D[0] = (double)A[0] + (t * (double)(C[0] - A[0]));
             D[1] = A[1];
-            D[2] = A[2];
+            D[2] = LERP(t, A[2], C[2]);
             D[3] = LERP(t, A[3], C[3]);
             D[4] = LERP(t, A[4], C[4]);
             D[5] = LERP(t, A[5], C[5]);
-
-            /*System.out.println();
-            System.out.println("r: " + D[3]);
-            System.out.println("g: " + D[4]);
-            System.out.println("b: " + D[5]);
-            */
 
             tmpTrapezoids[2*i][0] = A.clone();
             tmpTrapezoids[2*i][1] = A.clone();
@@ -256,8 +255,23 @@ public class Renderer{
         }
     }
 
-    private void projectPoint(double[] xyz, int[] pxy) {
+    public void renderZ(int[][][] pix, double[][] zbuf){
+        _renderZ(world.getRoot(), world.getRoot(), pix, zbuf);
+    }
 
+    private void _renderZ(Geometry node, Geometry parent, int[][][] pix, double[][] zbuf){
+        node.getMatrix().rightMultiply(parent.getMatrix());
+        if(node.numFaces() > 0 && node.numVertices() > 0){
+            renderScanConvertedGeometry(node, node.getMatrix(), pix, zbuf);
+        }
+        if(node.getNumChildren() != 0){
+            for(int i = 0; i < node.getNumChildren(); i++){
+                _renderZ(node.getChild(i), node, pix, zbuf);
+            }
+        }
+    }
+
+    private void projectPoint(double[] xyz, int[] pxy) {
         double x = xyz[0];
         double y = xyz[1];
         double z = xyz[2];

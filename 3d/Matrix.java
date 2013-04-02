@@ -2,7 +2,8 @@ public class Matrix implements IMatrix {
     public double[][] mat;
     private double[][] temp;
     private double[][] invert;
-    private double[][] transposed;
+    private double[] transformedNormal;
+    private double[] srcNormal;
     private Matrix inherit;
 
     // keeping things straight in my head...
@@ -31,7 +32,8 @@ public class Matrix implements IMatrix {
         mat = new double[4][4];
         temp = new double[4][4];
         invert = new double[4][4];
-        transposed = new double[4][4];
+        transformedNormal = new double[3];
+        srcNormal = new double[3];
         //inherit = new Matrix();
     }
 
@@ -183,13 +185,18 @@ public class Matrix implements IMatrix {
         temp[1] = mat[1].clone();
         temp[2] = mat[2].clone();
         temp[3] = mat[3].clone();
-        Invert.invert(temp, invert);
-        transpose(invert, transposed);
-        //pp(transposed);
 
-        dst[3] = (((src[3] - -1) * (255 - 0)) / (1 - -1)) + 0;
-        dst[4] = (((src[4] - -1) * (255 - 0)) / (1 - -1)) + 0;
-        dst[5] = (((src[5] - -1) * (255 - 0)) / (1 - -1)) + 0;
+        srcNormal[0] = src[3];
+        srcNormal[1] = src[4];
+        srcNormal[2] = src[5];
+
+        Invert.invert(temp, invert);
+        transpose(invert, temp);
+        vecMatDot(srcNormal, temp, transformedNormal);
+
+        dst[3] = (((transformedNormal[0] - -1) * (255 - 0)) / (1 - -1)) + 0;
+        dst[4] = (((transformedNormal[1] - -1) * (255 - 0)) / (1 - -1)) + 0;
+        dst[5] = (((transformedNormal[2] - -1) * (255 - 0)) / (1 - -1)) + 0;
     }
 
     private void transpose(double[][] src, double[][] dst){
@@ -200,14 +207,15 @@ public class Matrix implements IMatrix {
         }
     }
 
-    private void transformNormal(double[][] mat, double[] norm, double[] dst){
-        for(int i = 0; i < mat.length; i++){
-            for(int j = 0; j < mat[i].length; j++){
-                for(int k = 0; k < mat[i].length; k++){
-                    //dst[i] = 
-                }
-            }
+    private void vecMatDot(double[] vec, double[][]mat, double[] dst){
+        for(int i = 0; i < 3; i++){
+            dst[i] = dot(vec, mat[i].clone());
         }
+    }
+
+    private double dot(double[] vec1, double[] vec2){
+        double product = vec1[0]*vec2[0] + vec1[1]*vec2[1] + vec1[2]*vec2[2];
+        return product;
     }
 
     public void pp(){
