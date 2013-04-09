@@ -13,6 +13,7 @@ public class Renderer{
     int[][][] tmpTriangles;
     int[][][] tmpTrapezoids;
     int[][] tmpProjectedFace;
+    boolean colorNormals;
     double[] D;
     double FL;
 
@@ -35,18 +36,24 @@ public class Renderer{
         this.h = height;
         this.g = g;
 
-        a = new int[6];
-        b = new int[6];
+        a = new int[9];
+        b = new int[9];
 
-        point0 = new double[6];
-        point1 = new double[6];
+        point0 = new double[9];
+        point1 = new double[9];
 
-        tmpTriangles = new int[2][3][6];
-        tmpTrapezoids = new int[4][4][6];
-        tmpProjectedFace = new int[4][6];
-        D = new double[6];
+        tmpProjectedFace = new int[4][9]; // x y z nx ny nz r g b
+        tmpTriangles = new int[2][3][9];
+        tmpTrapezoids = new int[4][4][9];
+        D = new double[9];
+
+        colorNormals = false;
 
         FL = 7.0;
+    }
+
+    public void colorNormals(boolean c){
+        this.colorNormals = c;
     }
 
     public double getFocalLength(){
@@ -130,6 +137,9 @@ public class Renderer{
             D[3] = LERP(t, A[3], C[3]);
             D[4] = LERP(t, A[4], C[4]);
             D[5] = LERP(t, A[5], C[5]);
+            D[6] = LERP(t, A[6], C[6]);
+            D[7] = LERP(t, A[7], C[7]);
+            D[8] = LERP(t, A[8], C[8]);
 
             tmpTrapezoids[2*i][0] = A.clone();
             tmpTrapezoids[2*i][1] = A.clone();
@@ -140,6 +150,9 @@ public class Renderer{
             tmpTrapezoids[2*i][3][3] = (int)D[3];
             tmpTrapezoids[2*i][3][4] = (int)D[4];
             tmpTrapezoids[2*i][3][5] = (int)D[5];
+            tmpTrapezoids[2*i][3][6] = (int)D[6];
+            tmpTrapezoids[2*i][3][7] = (int)D[7];
+            tmpTrapezoids[2*i][3][8] = (int)D[8];
 
             tmpTrapezoids[(2*i)+1][0] = B.clone();
             tmpTrapezoids[(2*i)+1][1][0] = (int)D[0];
@@ -148,6 +161,9 @@ public class Renderer{
             tmpTrapezoids[(2*i)+1][1][3] = (int)D[3];
             tmpTrapezoids[(2*i)+1][1][4] = (int)D[4];
             tmpTrapezoids[(2*i)+1][1][5] = (int)D[5];
+            tmpTrapezoids[(2*i)+1][1][6] = (int)D[6];
+            tmpTrapezoids[(2*i)+1][1][7] = (int)D[7];
+            tmpTrapezoids[(2*i)+1][1][8] = (int)D[8];
             tmpTrapezoids[(2*i)+1][2] = C.clone();
             tmpTrapezoids[(2*i)+1][3] = C.clone();
         }
@@ -175,11 +191,17 @@ public class Renderer{
             double nxXL = LERP(t, lt[3], lb[3]);
             double nyXL = LERP(t, lt[4], lb[4]);
             double nzXL = LERP(t, lt[5], lb[5]);
+            double rXL = LERP(t, lt[6], lb[6]);
+            double gXL = LERP(t, lt[7], lb[7]);
+            double bXL = LERP(t, lt[8], lb[8]);
 
             double pzXR = LERP(t, rt[2], rb[2]);
             double nxXR = LERP(t, rt[3], rb[3]);
             double nyXR = LERP(t, rt[4], rb[4]);
             double nzXR = LERP(t, rt[5], rb[5]);
+            double rXR = LERP(t, rt[6], rb[6]);
+            double gXR = LERP(t, rt[7], rb[7]);
+            double bXR = LERP(t, rt[8], rb[8]);
 
             double xL = xLT + t * (xLB - xLT);
             double xR = xRT + t * (xRB - xRT);
@@ -194,9 +216,15 @@ public class Renderer{
                 try{
                     if(pZ > zbuf[scanline][pix]){
                         zbuf[scanline][pix] = pZ;
-                        pixels[scanline][pix][0] = (int)LERP(t, nxXL, nxXR);
-                        pixels[scanline][pix][1] = (int)LERP(t, nyXL, nyXR);
-                        pixels[scanline][pix][2] = (int)LERP(t, nzXL, nzXR);
+                        if(this.colorNormals){
+                            pixels[scanline][pix][0] = (int)LERP(t, nxXL, nxXR);
+                            pixels[scanline][pix][1] = (int)LERP(t, nyXL, nyXR);
+                            pixels[scanline][pix][2] = (int)LERP(t, nzXL, nzXR);
+                        } else {
+                            pixels[scanline][pix][0] = (int)LERP(t, rXL, rXR);
+                            pixels[scanline][pix][1] = (int)LERP(t, gXL, gXR);
+                            pixels[scanline][pix][2] = (int)LERP(t, bXL, bXR);
+                        }
                     }
                 } catch(ArrayIndexOutOfBoundsException f){}
             }
@@ -230,6 +258,7 @@ public class Renderer{
                 mat.transform(geo.getVertex(face[f]), point0);
                 projectPoint(point0, a);
                 tmpProjectedFace[f] = a.clone();
+                lightFace(tmpProjectedFace[f], geo.getMaterial());
             }
 
             trianglesFromFace();
@@ -287,6 +316,12 @@ public class Renderer{
         pxy[3] = (int)xyz[3];
         pxy[4] = (int)xyz[4];
         pxy[5] = (int)xyz[5];
+    }
+
+    private void lightFace(int[] vertex, Material mat){
+        vertex[6] = (int)mat.getAmbient().x;
+        vertex[7] = (int)mat.getAmbient().y;
+        vertex[8] = (int)mat.getAmbient().z;
     }
 
     private int map(double normal){

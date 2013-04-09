@@ -23,4 +23,8 @@ public class Material {
         this.specular = new Vec3(r*255, g*255, b*255);
         this.specPower = p;
     }
+
+    public Vec3 getAmbient(){
+        return this.ambient;
+    }
 }
