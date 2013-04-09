@@ -7,6 +7,7 @@ public class Geometry implements IGeometry{
     private ArrayList<Geometry> children;
     Matrix globalMatrix;
     Matrix matrix = new Matrix();
+    Material material = new Material();
 
     public Geometry(int M, int N){
         this.M = M;
@@ -25,6 +26,14 @@ public class Geometry implements IGeometry{
 
     public Matrix getMatrix(){
         return matrix;
+    }
+
+    public Material getMaterial(){
+        return material;
+    }
+
+    public void setMaterial(Material m){
+        this.material = m;
     }
 
     public int getNumChildren(){
