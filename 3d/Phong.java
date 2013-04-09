@@ -5,6 +5,7 @@ public class Phong extends MISApplet {
     Renderer rnd;
     World world = new World();
     Material mat = new Material();
+    DirectionalLight light = new DirectionalLight(1, 1, 1, 1, 1, 1, .5);
     int[][][] pixels;
     double[][] zbuffer;
 
@@ -16,7 +17,9 @@ public class Phong extends MISApplet {
 
         mat.setAmbient(1, 0, 0);
         mat.setDiffuse(1, 0, 0);
-        mat.setSpecular(1, 1, 1);
+        mat.setSpecular(1, 1, 1, .5);
+
+        rnd.addLight(light);
 
         planet.buildSphere();
         planet.setMaterial(mat);

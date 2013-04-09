@@ -6,6 +6,7 @@ public class Renderer{
     int w, h;
     Graphics g;
     World world;
+    DirectionalLight light;
     int a[], b[];
     double aNormals[];
     double point0[], point1[];
@@ -50,6 +51,10 @@ public class Renderer{
 
     public double getFocalLength(){
         return FL;
+    }
+
+    public void addLight(DirectionalLight light){
+        this.light = light;
     }
 
     public void renderGeometry(Geometry geo, Matrix mat){
