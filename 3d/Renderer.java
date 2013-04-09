@@ -7,6 +7,7 @@ public class Renderer{
     Graphics g;
     World world;
     DirectionalLight light;
+    Vec3 vertColor, vertDiffuseColor, vertNormal;
     int a[], b[];
     double aNormals[];
     double point0[], point1[];
@@ -46,6 +47,10 @@ public class Renderer{
         tmpTriangles = new int[2][3][9];
         tmpTrapezoids = new int[4][4][9];
         D = new double[9];
+
+        vertColor = new Vec3();
+        vertNormal = new Vec3();
+        vertDiffuseColor = new Vec3();
 
         colorNormals = false;
 
@@ -307,9 +312,22 @@ public class Renderer{
     }
 
     private void lightFace(int[] vertex, Material mat){
-        vertex[6] = (int)mat.getAmbient().x;
-        vertex[7] = (int)mat.getAmbient().y;
-        vertex[8] = (int)mat.getAmbient().z;
+        vertNormal.init(vertex[3], vertex[4], vertex[5]);
+
+        //double diffusePower = this.light.getDirection().dot(vertNormal);
+        double diffusePower = vertNormal.dot(this.light.getDirection());
+        if(diffusePower < 0){
+            diffusePower = 0;
+        }
+        vertDiffuseColor = mat.getDiffuse().mul(diffusePower);
+
+        vertex[6] = (int)(mat.getAmbient().x * 10 + vertDiffuseColor.x);
+        vertex[7] = (int)(mat.getAmbient().y * 10 + vertDiffuseColor.y);
+        vertex[8] = (int)(mat.getAmbient().z * 10 + vertDiffuseColor.z);
+
+        vertex[6] *= 40;
+        vertex[7] *= 40;
+        vertex[8] *= 40;
     }
 
     private int map(double normal){
@@ -319,5 +337,4 @@ public class Renderer{
     private double LERP(double percent, double a, double b){
         return percent * (b - a) + a;
     }
-
 }

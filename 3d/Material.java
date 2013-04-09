@@ -12,19 +12,23 @@ public class Material {
     }
 
     public void setAmbient(double r, double g, double b){
-        this.ambient = new Vec3(r*255, g*255, b*255);
+        this.ambient = new Vec3(r, g, b);
     }
 
     public void setDiffuse(double r, double g, double b){
-        this.diffuse = new Vec3(r*255, g*255, b*255);
+        this.diffuse = new Vec3(r, g, b);
     }
 
     public void setSpecular(double r, double g, double b, double p){
-        this.specular = new Vec3(r*255, g*255, b*255);
+        this.specular = new Vec3(r, g, b);
         this.specPower = p;
     }
 
     public Vec3 getAmbient(){
         return this.ambient;
+    }
+
+    public Vec3 getDiffuse(){
+        return this.diffuse;
     }
 }

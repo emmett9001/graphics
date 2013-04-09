@@ -15,8 +15,8 @@ public class Phong extends MISApplet {
         pixels = new int[H][W][3];
         zbuffer = new double[H][W];
 
-        mat.setAmbient(1, 0, 0);
-        mat.setDiffuse(1, 0, 0);
+        mat.setAmbient(.3, 0, 0);
+        mat.setDiffuse(0, .01, 0);
         mat.setSpecular(1, 1, 1, .5);
 
         rnd.addLight(light);
@@ -28,6 +28,8 @@ public class Phong extends MISApplet {
 
     public void initFrame(double time) {
         t = 5 * time;
+
+        planet.getMatrix().identity();
 
         for(int i = 0; i < H; i++){
             for(int j = 0; j < W; j++){
