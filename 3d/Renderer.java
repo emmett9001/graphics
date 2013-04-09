@@ -144,26 +144,14 @@ public class Renderer{
             tmpTrapezoids[2*i][0] = A.clone();
             tmpTrapezoids[2*i][1] = A.clone();
             tmpTrapezoids[2*i][2] = B.clone();
-            tmpTrapezoids[2*i][3][0] = (int)D[0];
-            tmpTrapezoids[2*i][3][1] = (int)D[1];
-            tmpTrapezoids[2*i][3][2] = (int)D[2];
-            tmpTrapezoids[2*i][3][3] = (int)D[3];
-            tmpTrapezoids[2*i][3][4] = (int)D[4];
-            tmpTrapezoids[2*i][3][5] = (int)D[5];
-            tmpTrapezoids[2*i][3][6] = (int)D[6];
-            tmpTrapezoids[2*i][3][7] = (int)D[7];
-            tmpTrapezoids[2*i][3][8] = (int)D[8];
+            for(int k = 0; k < 9; k++){
+                tmpTrapezoids[2*i][3][k] = (int)D[k];
+            }
 
             tmpTrapezoids[(2*i)+1][0] = B.clone();
-            tmpTrapezoids[(2*i)+1][1][0] = (int)D[0];
-            tmpTrapezoids[(2*i)+1][1][1] = (int)D[1];
-            tmpTrapezoids[(2*i)+1][1][2] = (int)D[2];
-            tmpTrapezoids[(2*i)+1][1][3] = (int)D[3];
-            tmpTrapezoids[(2*i)+1][1][4] = (int)D[4];
-            tmpTrapezoids[(2*i)+1][1][5] = (int)D[5];
-            tmpTrapezoids[(2*i)+1][1][6] = (int)D[6];
-            tmpTrapezoids[(2*i)+1][1][7] = (int)D[7];
-            tmpTrapezoids[(2*i)+1][1][8] = (int)D[8];
+            for(int k = 0; k < 9; k++){
+                tmpTrapezoids[(2*i)+1][1][k] = (int)D[k];
+            }
             tmpTrapezoids[(2*i)+1][2] = C.clone();
             tmpTrapezoids[(2*i)+1][3] = C.clone();
         }
