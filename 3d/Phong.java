@@ -5,7 +5,7 @@ public class Phong extends MISApplet {
     Renderer rnd;
     World world = new World();
     Material mat = new Material();
-    DirectionalLight light = new DirectionalLight(1, 1, 1, 1, 1, 1, .5);
+    DirectionalLight light = new DirectionalLight(8, 3, 2, 1, 1, 1, .5);
     int[][][] pixels;
     double[][] zbuffer;
 
@@ -15,9 +15,10 @@ public class Phong extends MISApplet {
         pixels = new int[H][W][3];
         zbuffer = new double[H][W];
 
-        mat.setAmbient(.3, 0, 0);
-        mat.setDiffuse(0, .01, 0);
-        mat.setSpecular(1, 1, 1, .5);
+        mat.setAmbient(.1, .1, 0);
+        mat.setDiffuse(.2, .2, 0);
+        mat.setSpecular(.3, .3, .3, .3);
+        mat.setSpecularFocus(15);
 
         rnd.addLight(light);
 
@@ -30,6 +31,8 @@ public class Phong extends MISApplet {
         t = 5 * time;
 
         planet.getMatrix().identity();
+        planet.getMatrix().scale(2, 2, 2);
+        planet.getMatrix().translate(Math.sin(time), 0, Math.cos(time));
 
         for(int i = 0; i < H; i++){
             for(int j = 0; j < W; j++){

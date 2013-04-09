@@ -51,4 +51,18 @@ public class Vec3{
         double magnitude = this.mag();
         return new Vec3(this.x/magnitude, this.y/magnitude, this.z/magnitude);
     }
+
+    public Vec3 reflect(Vec3 in){
+        Vec3 norm = in.normalize();
+        double dot_product = this.normalize().dot(norm);
+        // limit to strictly positive??
+        Vec3 v = norm.mul(dot_product * 2);
+        return v;
+    }
+
+    public void pp(){
+        System.out.println("x: " + x);
+        System.out.println("y: " + y);
+        System.out.println("z: " + z);
+    }
 }

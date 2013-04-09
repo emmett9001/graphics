@@ -17,4 +17,8 @@ public class DirectionalLight{
     public double getPower(){
         return this.power;
     }
+
+    public void setPower(double p){
+        this.power = p;
+    }
 }

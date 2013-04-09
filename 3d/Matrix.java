@@ -181,10 +181,11 @@ public class Matrix implements IMatrix {
             }
         }
         // ((M.invert).transpose) DOT N
-        temp[0] = mat[0].clone();
-        temp[1] = mat[1].clone();
-        temp[2] = mat[2].clone();
-        temp[3] = mat[3].clone();
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
+                temp[j][i] = mat[i][j];
+            }
+        }
 
         srcNormal[0] = src[3];
         srcNormal[1] = src[4];
@@ -194,15 +195,15 @@ public class Matrix implements IMatrix {
         transpose(invert, temp);
         vecMatDot(srcNormal, temp, transformedNormal);
 
-        dst[3] = (((transformedNormal[0] - -1) * (255 - 0)) / (1 - -1)) + 0;
-        dst[4] = (((transformedNormal[1] - -1) * (255 - 0)) / (1 - -1)) + 0;
-        dst[5] = (((transformedNormal[2] - -1) * (255 - 0)) / (1 - -1)) + 0;
+        dst[3] = ((transformedNormal[0] + 1) * 255) / 2;
+        dst[4] = ((transformedNormal[1] + 1) * 255) / 2;
+        dst[5] = ((transformedNormal[2] + 1) * 255) / 2;
     }
 
     private void transpose(double[][] src, double[][] dst){
-        for(int i = 0; i < 4; i++){
-            for(int j = 0; j < 4; j++){
-                dst[i][j] = src[j][i];
+        for(int i = 0; i < src.length; i++){
+            for(int j = 0; j < src[0].length; j++){
+                dst[j][i] = src[i][j];
             }
         }
     }

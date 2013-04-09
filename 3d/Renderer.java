@@ -7,7 +7,7 @@ public class Renderer{
     Graphics g;
     World world;
     DirectionalLight light;
-    Vec3 vertColor, vertDiffuseColor, vertNormal;
+    Vec3 vertColor, vertDiffuseColor, vertSpecColor, vertNormal, eye;
     int a[], b[];
     double aNormals[];
     double point0[], point1[];
@@ -51,6 +51,8 @@ public class Renderer{
         vertColor = new Vec3();
         vertNormal = new Vec3();
         vertDiffuseColor = new Vec3();
+        vertSpecColor = new Vec3();
+        eye = new Vec3(0, 0, 1);
 
         colorNormals = false;
 
@@ -251,7 +253,7 @@ public class Renderer{
                 mat.transform(geo.getVertex(face[f]), point0);
                 projectPoint(point0, a);
                 tmpProjectedFace[f] = a.clone();
-                lightFace(tmpProjectedFace[f], geo.getMaterial());
+                lightVertex(tmpProjectedFace[f], geo.getMaterial());
             }
 
             trianglesFromFace();
@@ -311,23 +313,29 @@ public class Renderer{
         pxy[5] = (int)xyz[5];
     }
 
-    private void lightFace(int[] vertex, Material mat){
+    private void lightVertex(int[] vertex, Material mat){
         vertNormal.init(vertex[3], vertex[4], vertex[5]);
 
-        //double diffusePower = this.light.getDirection().dot(vertNormal);
-        double diffusePower = vertNormal.dot(this.light.getDirection());
+        double diffusePower = this.light.getDirection().dot(vertNormal.normalize());
         if(diffusePower < 0){
             diffusePower = 0;
         }
         vertDiffuseColor = mat.getDiffuse().mul(diffusePower);
 
-        vertex[6] = (int)(mat.getAmbient().x * 10 + vertDiffuseColor.x);
-        vertex[7] = (int)(mat.getAmbient().y * 10 + vertDiffuseColor.y);
-        vertex[8] = (int)(mat.getAmbient().z * 10 + vertDiffuseColor.z);
+        double specPower = this.light.getDirection().reflect(vertNormal).dot(eye);
+        if(specPower < 0){
+            specPower = 0;
+        }
+        specPower = Math.pow(specPower, mat.getSpecularFocus());
+        vertSpecColor = mat.getSpecular().mul(specPower*mat.getSpecularPower());
 
-        vertex[6] *= 40;
-        vertex[7] *= 40;
-        vertex[8] *= 40;
+        vertColor = vertDiffuseColor.add(vertSpecColor);
+        vertColor = vertColor.mul(this.light.getPower());
+        vertColor = mat.getAmbient().add(vertColor);
+
+        vertex[6] = (int)(255 * Math.pow(vertColor.x, .45));
+        vertex[7] = (int)(255 * Math.pow(vertColor.y, .45));
+        vertex[8] = (int)(255 * Math.pow(vertColor.z, .45));
     }
 
     private int map(double normal){
