@@ -253,7 +253,9 @@ public class Renderer{
                 mat.transform(geo.getVertex(face[f]), point0);
                 projectPoint(point0, a);
                 tmpProjectedFace[f] = a.clone();
-                lightVertex(tmpProjectedFace[f], geo.getMaterial());
+                if(!this.colorNormals){
+                    lightVertex(tmpProjectedFace[f], geo.getMaterial());
+                }
             }
 
             trianglesFromFace();

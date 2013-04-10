@@ -6,7 +6,9 @@ public class MyMISApplet extends MISApplet {
     double[][] zbuffer;
 
     public void initialize(){
+        rnd.colorNormals(true);
         pixels = new int[H][W][3];
+        zbuffer = new double[H][W];
         cube.buildTorus();
     }
 

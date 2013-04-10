@@ -17,8 +17,8 @@ public class Phong extends MISApplet {
 
         mat.setAmbient(.1, .1, 0);
         mat.setDiffuse(.2, .2, 0);
-        mat.setSpecular(.6, .6, .6, .3);
-        mat.setSpecularFocus(12);
+        mat.setSpecular(.8, .8, .8, .1);
+        mat.setSpecularFocus(30);
 
         rnd.addLight(light);
 

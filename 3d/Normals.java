@@ -11,6 +11,7 @@ public class Normals extends MISApplet {
 
     public void initialize(){
         rnd = new Renderer(W, H, world);
+        rnd.colorNormals(true);
         root = world.getRoot();
         pixels = new int[H][W][3];
         zbuffer = new double[H][W];
