@@ -17,8 +17,8 @@ public class Phong extends MISApplet {
 
         mat.setAmbient(.1, .1, 0);
         mat.setDiffuse(.2, .2, 0);
-        mat.setSpecular(.3, .3, .3, .3);
-        mat.setSpecularFocus(15);
+        mat.setSpecular(.6, .6, .6, .3);
+        mat.setSpecularFocus(12);
 
         rnd.addLight(light);
 
@@ -32,6 +32,7 @@ public class Phong extends MISApplet {
 
         planet.getMatrix().identity();
         planet.getMatrix().scale(2, 2, 2);
+        planet.getMatrix().rotateY(time);
         planet.getMatrix().translate(Math.sin(time), 0, Math.cos(time));
 
         for(int i = 0; i < H; i++){
