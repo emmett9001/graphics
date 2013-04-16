@@ -6,4 +6,12 @@ public class Shape{
         this.position = new Vec3(x, y, z);
         this.material = m;
     }
+
+    public Vec3 getPosition(){
+        return this.position;
+    }
+
+    public Material getMaterial(){
+        return this.material;
+    }
 }
