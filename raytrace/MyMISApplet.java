@@ -26,13 +26,13 @@ public class MyMISApplet extends MISApplet {
         s = new Sphere(0, 0, 0, mat, .1);
         rnd.addSphere(s);
 
-        s2 = new Sphere(0, 0, 0, mat2, .01);
+        s2 = new Sphere(0, 0, 0, mat2, .008);
         rnd.addSphere(s2);
 
         s3 = new Sphere(0, 0, 0, mat2, .01);
         rnd.addSphere(s3);
 
-        s4 = new Sphere(0, 0, 0, mat2, .01);
+        s4 = new Sphere(0, 0, 0, mat2, .015);
         rnd.addSphere(s4);
 
         pixels = new int[H][W][3];
