@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class RaytraceRenderer{
-    private ArrayList<Sphere> spheres;
+    private ArrayList<LeanSphere> spheres;
     private double[] v_s = new double[3];
     private double[] v = new double[3];
     private double[] w = new double[3];
@@ -16,7 +16,7 @@ public class RaytraceRenderer{
     public RaytraceRenderer(int W, int H){
         this.W = W;
         this.H = H;
-        this.spheres = new ArrayList<Sphere>();
+        this.spheres = new ArrayList<LeanSphere>();
 
         vertColor = new Vec3();
         vertNormal = new Vec3();
@@ -29,12 +29,12 @@ public class RaytraceRenderer{
         this.light = l;
     }
 
-    public void addSphere(Sphere s){
+    public void addSphere(LeanSphere s){
         this.spheres.add(s);
     }
 
     public void render(int[][][] pix, double[][] zbuf){
-        for(Sphere s : this.spheres){
+        for(LeanSphere s : this.spheres){
             this._render(s.getArray().clone(), s.getMaterial(), pix, zbuf);
         }
     }
