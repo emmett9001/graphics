@@ -1,8 +1,8 @@
-public class Sphere extends Shape{
+public class LeanSphere extends Shape{
     private double radius;
     private double[] arr;
 
-    public Sphere(double x, double y, double z, Material m, double r){
+    public LeanSphere(double x, double y, double z, Material m, double r){
         super(x, y, z, m);
         this.radius = r;
         this.arr = new double[4];

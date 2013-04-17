@@ -1,4 +1,4 @@
-public class MyMISApplet extends MISApplet {
+public class RayTrace extends MISApplet {
     double t = 0;
     RaytraceRenderer rnd;
     int[][][] pixels;
