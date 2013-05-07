@@ -8,7 +8,7 @@ public class RaytraceRenderer{
     private double[] t = new double[2];
     private double[] nn = new double[3];
     private int[] c = new int[3];
-    private double f = 100;
+    private double f = 1000;
     private int W, H;
     private DirectionalLight light;
     private Vec3 vertColor, vertDiffuseColor, vertSpecColor, vertNormal, eye;
@@ -40,35 +40,76 @@ public class RaytraceRenderer{
     }
 
     private void _render(double[] s, Material mat, int[][][] pix, double[][] zbuf){
-        for (int i = 0 ; i < W; i++)
+        int thresh = 30, skip = 6;
+        for (int i = 0 ; i < W; i+=skip)
         for (int j = 0 ; j < H; j++) {
-            double x = 0.8 * ((i+0.5) / W - 0.5);
-            double y = 0.8 * ((j+0.5) / W - 0.5 * H / W);
-
-            set(v, 0, 0, f);
-            set(w, x, y, -f);
-            normalize(w);
-
-            if (raytrace(s, v, w, t)) {
-                for (int k = 0 ; k < 3 ; k++)
-                    nn[k] = v[k] + t[0] * w[k] - s[k];
-                normalize(nn);
-                computeShading(mat);
-
-                try{
-                    if(t[0] < zbuf[j][i]){
-                        pix[j][i][0] = c[0];
-                        pix[j][i][1] = c[1];
-                        pix[j][i][2] = c[2];
-                        zbuf[j][i] = t[0];
-                    }
-                } catch(Exception e){
+            doRaytrace(s, mat, pix, zbuf, i, j);
+            if(i >= skip && colorDiff(pix[j][i], pix[j][i-skip]) > thresh){
+                for(int k = 1; k < skip; k++){
+                    doRaytrace(s, mat, pix, zbuf, i-k, j);
+                }
+            } else {
+                for(int k = 1; k < skip; k++){
+                    lerpColor(pix, zbuf, i, j, k, skip);
                 }
             }
         }
     }
 
-    private void computeShading(Material mat){
+    private void lerpColor(int[][][] pix, double[][] zbuf, int i, int j, int k, int skip){
+        float pct = ((i-k)-(i-skip))/-skip;
+        if(i == 0) return;
+        pix[j][i-k][0] = (int)LERP(pct, pix[j][i-skip][0], pix[j][i][0]);
+        pix[j][i-k][1] = (int)LERP(pct, pix[j][i-skip][1], pix[j][i][1]);
+        pix[j][i-k][2] = (int)LERP(pct, pix[j][i-skip][2], pix[j][i][2]);
+    }
+
+    private int colorDiff(int[] c1, int[] c2){
+        int dR = Math.abs(c1[0] - c2[0]);
+        int dG = Math.abs(c1[1] - c2[1]);
+        int dB = Math.abs(c1[2] - c2[2]);
+        int total = dR + dG + dB;
+
+        return total;
+    }
+
+    private void doRaytrace(double[] s, Material mat, int[][][] pix, double[][] zbuf, int i, int j){
+        double x = 0.8 * ((i+0.5) / W - 0.5);
+        double y = 0.8 * ((j+0.5) / W - 0.5 * H / W);
+
+        set(v, 0, 0, f);
+        set(w, x, y, -f*s[2]);
+        normalize(w);
+
+        if(raytrace(s, v, w, t)) {
+            for (int k = 0 ; k < 3 ; k++)
+                nn[k] = v[k] + t[0] * w[k] - s[k];
+            normalize(nn);
+
+            set(v, x, y, -f*s[2]);
+            set(w, this.light.getDirection().x,
+                this.light.getDirection().y,
+                this.light.getDirection().z);
+            normalize(w);
+            boolean shadow = false;
+            double[] t2 = new double[2];
+            for(Sphere s2 : this.spheres){
+                if(raytrace(s2.getArray(), v, w, t2)){
+                    shadow = true;
+                }
+            }
+            computeShading(mat, s, x, y, shadow);
+
+            if(t[0] < zbuf[j][i]){
+                pix[j][i][0] = c[0];
+                pix[j][i][1] = c[1];
+                pix[j][i][2] = c[2];
+                zbuf[j][i] = t[0];
+            }
+        }
+    }
+
+    private void computeShading(Material mat, double[] sp, double x, double y, boolean shadow){
         vertNormal.init(nn[0], nn[1], nn[2]);
 
         double diffusePower = this.light.getDirection().dot(vertNormal.normalize());
@@ -84,13 +125,20 @@ public class RaytraceRenderer{
         specPower = Math.pow(specPower, mat.getSpecularFocus());
         vertSpecColor = mat.getSpecular().mul(specPower*mat.getSpecularPower());
 
-        vertColor = vertDiffuseColor.add(vertSpecColor);
-        vertColor = vertColor.mul(this.light.getPower());
+        if(!shadow){
+            vertColor = vertDiffuseColor.add(vertSpecColor);
+            vertColor = vertColor.mul(this.light.getPower());
+        }
         vertColor = mat.getAmbient().add(vertColor);
 
         c[0] = (int)(255 * Math.pow(vertColor.x, .45));
         c[1] = (int)(255 * Math.pow(vertColor.y, .45));
         c[2] = (int)(255 * Math.pow(vertColor.z, .45));
+    }
+
+    private boolean equals(double[] s1, double[] s2){
+        return (s1[0] == s2[0] && s1[1] == s2[1] && s1[2] == s2[2] &&
+                s1[3] == s2[3]);
     }
 
     private boolean raytrace(double[] s, double[] v, double[] w, double[] t) {
@@ -135,5 +183,9 @@ public class RaytraceRenderer{
         w[0] = w[0] / length;
         w[1] = w[1] / length;
         w[2] = w[2] / length;
+    }
+
+    private double LERP(double percent, double a, double b){
+        return percent * (b - a) + a;
     }
 }

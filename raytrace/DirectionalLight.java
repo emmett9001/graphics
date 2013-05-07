@@ -14,6 +14,10 @@ public class DirectionalLight{
         return this.direction;
     }
 
+    public void setDirection(double x, double y, double z){
+        this.direction.init(x, y, z);
+    }
+
     public double getPower(){
         return this.power;
     }
