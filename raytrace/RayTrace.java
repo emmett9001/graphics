@@ -1,9 +1,9 @@
-public class MyMISApplet extends MISApplet {
+public class RayTrace extends MISApplet {
     double t = 0;
     RaytraceRenderer rnd;
     int[][][] pixels;
     double[][] zbuffer;
-    Sphere s, s2, s3, s4;
+    LeanSphere s, s2, s3, s4;
     Material mat = new Material();
     Material mat2 = new Material();
     DirectionalLight light = new DirectionalLight(8, 3, 2, 1, 1, 1, .3);
@@ -23,16 +23,16 @@ public class MyMISApplet extends MISApplet {
 
         rnd.addLight(light);
 
-        s = new Sphere(0, 0, .1, mat, .9);
+        s = new LeanSphere(0, 0, 0, mat, .1);
         rnd.addSphere(s);
 
-        s2 = new Sphere(0, 0, 0, mat2, .008);
+        s2 = new LeanSphere(0, 0, 0, mat2, .008);
         rnd.addSphere(s2);
 
-        s3 = new Sphere(.1, 0, 1, mat2, .05);
+        s3 = new LeanSphere(0, 0, 0, mat2, .01);
         rnd.addSphere(s3);
 
-        s4 = new Sphere(0, 0, 0, mat2, .015);
+        s4 = new LeanSphere(0, 0, 0, mat2, .015);
         rnd.addSphere(s4);
 
         pixels = new int[H][W][3];
