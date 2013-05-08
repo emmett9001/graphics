@@ -23,13 +23,13 @@ public class RayTrace extends MISApplet {
 
         rnd.addLight(light);
 
-        s = new LeanSphere(0, 0, 0, mat, .1);
+        s = new LeanSphere(0, 0, .1, mat, .9);
         rnd.addSphere(s);
 
         s2 = new LeanSphere(0, 0, 0, mat2, .008);
         rnd.addSphere(s2);
 
-        s3 = new LeanSphere(0, 0, 0, mat2, .01);
+        s3 = new LeanSphere(.1, 0, 1, mat2, .05);
         rnd.addSphere(s3);
 
         s4 = new LeanSphere(0, 0, 0, mat2, .015);

@@ -93,7 +93,7 @@ public class RaytraceRenderer{
             normalize(w);
             boolean shadow = false;
             double[] t2 = new double[2];
-            for(Sphere s2 : this.spheres){
+            for(LeanSphere s2 : this.spheres){
                 if(raytrace(s2.getArray(), v, w, t2)){
                     shadow = true;
                 }
